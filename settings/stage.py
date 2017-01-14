@@ -24,10 +24,16 @@ DATABASES = {
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
+# Django static
+# LINK: https://devcenter.heroku.com/articles/django-assets
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.10/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# https://docs.djangoproject.com/en/1.9/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 # LINK: http://www.bogotobogo.com/python/Django/Python_Django_Image_Files_Uploading_Example.php
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
