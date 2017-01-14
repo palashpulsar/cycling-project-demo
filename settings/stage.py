@@ -34,8 +34,12 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
-print "PROJECT_ROOT: ", PROJECT_ROOT
-print "BASE_DIR: ", BASE_DIR
+print PROJECT_ROOT, " -> PROJECT_ROOT"
+print BASE_DIR, " -> BASE_DIR"
+print STATIC_ROOT, " -> STATIC_ROOT"
+print STATIC_URL, " -> STATIC_URL"
+print STATICFILES_DIRS, " -> STATICFILES_DIRS"
+print "\n \n"
 
 # LINK: http://www.bogotobogo.com/python/Django/Python_Django_Image_Files_Uploading_Example.php
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
