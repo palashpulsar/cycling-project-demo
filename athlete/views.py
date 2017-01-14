@@ -34,6 +34,7 @@ def map_viz(request):
 def gpx_delete():
 	gpx_file.objects.all().delete()
 	path_gpx = os.path.join(MEDIA_ROOT, 'gpx')
+	print MEDIA_ROOT, " -> MEDIA_ROOT"
 	for the_file in os.listdir(path_gpx):
 		file_path = os.path.join(path_gpx, the_file)
 		if not file_path.endswith('.txt'):
