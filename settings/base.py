@@ -107,14 +107,14 @@ STATIC_URL = '/static/'
 # LINK: https://devcenter.heroku.com/articles/django-assets
 ATHLETE_APP_URL = os.path.join(BASE_DIR, 'athlete')
 AUDIENCE_APP_URL = os.path.join(BASE_DIR, 'audience')
-STATICFILES_DIRS = (
-    # os.path.join(BASE_DIR, 'static'),
-    os.path.join(ATHLETE_APP_URL, 'static'),
-    os.path.join(AUDIENCE_APP_URL, 'static'),
-)
+# STATICFILES_DIRS = (
+#     # os.path.join(BASE_DIR, 'static'),
+#     os.path.join(ATHLETE_APP_URL, 'static'),
+#     os.path.join(AUDIENCE_APP_URL, 'static'),
+# )
 
 print STATIC_ROOT, " -> STATIC_ROOT"
-print STATICFILES_DIRS, " -> STATICFILES_DIRS"
+# print STATICFILES_DIRS, " -> STATICFILES_DIRS"
 
 # LINK: http://www.bogotobogo.com/python/Django/Python_Django_Image_Files_Uploading_Example.php
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
