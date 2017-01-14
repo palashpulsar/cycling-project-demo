@@ -40,3 +40,8 @@ print "BASE_DIR: ", BASE_DIR
 # LINK: http://www.bogotobogo.com/python/Django/Python_Django_Image_Files_Uploading_Example.php
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
