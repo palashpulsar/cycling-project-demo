@@ -14,11 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# LINK: https://github.com/heroku/python-getting-started/blob/master/gettingstarted/settings.py
-PROJECT_ROOT = os.path.join(BASE_DIR, 'pace_strategy')
 
-print "\n", PROJECT_ROOT, " -> PROJECT_ROOT"
-print BASE_DIR, " -> BASE_DIR \n"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -102,3 +98,12 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.10/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/static/'
+
+# LINK: http://www.bogotobogo.com/python/Django/Python_Django_Image_Files_Uploading_Example.php
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

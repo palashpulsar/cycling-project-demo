@@ -24,16 +24,6 @@ DATABASES = {
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.10/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '/static/'
-# LINK: http://stackoverflow.com/questions/31226097/not-getting-static-files-with-django-heroku-deployment
-
-# LINK: http://www.bogotobogo.com/python/Django/Python_Django_Image_Files_Uploading_Example.php
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 
