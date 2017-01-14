@@ -1,1 +1,1 @@
-web: gunicorn vhms.wsgi --log-file -
+web: gunicorn pace_strategy.wsgi --log-file -
