@@ -103,6 +103,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+# Extra places for collectstatic to find static files.
+# LINK: https://devcenter.heroku.com/articles/django-assets
+ATHLETE_APP_URL = os.path.join(BASE_DIR, 'athlete')
+AUDIENCE_APP_URL = os.path.join(BASE_DIR, 'audience')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(ATHLETE_APP_URL, 'static'),
+    os.path.join(AUDIENCE_APP_URL, 'static'),
+)
 
 # LINK: http://www.bogotobogo.com/python/Django/Python_Django_Image_Files_Uploading_Example.php
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
