@@ -2,6 +2,7 @@ import os
 from .base import *
 import dj_database_url
 
+INSTALLED_APPS += ('storages',)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -28,3 +29,16 @@ DATABASES['default'].update(db_from_env)
 # https://warehouse.python.org/project/whitenoise/
 
 # STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+# LINK: http://offbytwo.com/2012/01/18/deploying-django-to-heroku.html
+# https://devcenter.heroku.com/articles/s3-upload-python
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID') #"AKIAIX6IMI5Q5Z2UM4FQ"
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY') #"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"
+# AWS_PASSWORD = "){87y*VE(B[0"
+AWS_STORAGE_BUCKET = 'pace-stage'
+AWS_S3_CUSTOM_DOMAIN = "pace-stage.s3-website.eu-central-1.amazonaws.com"
+STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+
+# LINK: http://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
