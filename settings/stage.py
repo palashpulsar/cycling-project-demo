@@ -34,6 +34,6 @@ MEDIA_URL = 'http://%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
 MEDIA_ROOT = '/media/'
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 # Fot static file
-STATIC_URL = 'http://%s.s3.amazonaws.com/static/' % AWS_STORAGE_BUCKET_NAME
-STATIC_ROOT = '/static/'
+STATIC_URL = 'http://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+# STATIC_ROOT = '/static/'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
