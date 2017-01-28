@@ -10,7 +10,7 @@ from settings.stage import MEDIA_ROOT
 # Create your views here.
 def default(request):
 	form = gpx_file_form()
-	gpx_delete() # There will be only one GPX file, and nothing else
+	# gpx_delete() # There will be only one GPX file, and nothing else
 	if request.method == 'POST':
 		form = gpx_file_form(request.POST, request.FILES)
 		if form.is_valid:
