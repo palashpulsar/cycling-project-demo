@@ -5,7 +5,7 @@ from .models import gpx_file
 import gpxpy
 from vincenty import vincenty
 import os
-from settings.base import MEDIA_ROOT
+from settings.base import MEDIA_URL
 
 # Create your views here.
 def default(request):
