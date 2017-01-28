@@ -1,7 +1,7 @@
 import os
 from .base import *
 import dj_database_url
-import custom_storages
+# import custom_storages
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
