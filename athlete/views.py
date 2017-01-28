@@ -5,7 +5,7 @@ from .models import gpx_file
 import gpxpy
 from vincenty import vincenty
 import os
-from settings.stage import MEDIA_URL
+from settings.stage import MEDIA_ROOT
 
 # Create your views here.
 def default(request):
@@ -33,8 +33,8 @@ def map_viz(request):
 
 def gpx_delete():
 	gpx_file.objects.all().delete()
-	path_gpx = os.path.join(MEDIA_URL, 'gpx')
-	print MEDIA_URL, " -> MEDIA_URL"
+	path_gpx = os.path.join(MEDIA_ROOT, 'gpx')
+	print MEDIA_ROOT, " -> MEDIA_ROOT"
 	print "I AM HERE"
 	for the_file in os.listdir(path_gpx):
 		file_path = os.path.join(path_gpx, the_file)
