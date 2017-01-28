@@ -28,8 +28,13 @@ AWS_QUERYSTRING_AUTH = False
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_STORAGE_BUCKET_NAME = 'pace-ire'
+# For media file
 # LINK: https://github.com/jamstooks/django-s3-folder-storage
 MEDIA_URL = 'http://%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
 MEDIA_ROOT = '/media/'
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 print MEDIA_ROOT, " -> MEDIA_ROOT"
+# Fot static file
+STATIC_URL = 'http://%s.s3.amazonaws.com/static/' % AWS_STORAGE_BUCKET_NAME
+STATIC_ROOT = '/static/'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
