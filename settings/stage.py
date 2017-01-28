@@ -22,7 +22,6 @@ DATABASES = {
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
-# LINK: http://agiliq.com/blog/2014/06/heroku-django-s3-for-serving-media-files/
 INSTALLED_APPS += ('storages',)
 AWS_QUERYSTRING_AUTH = False
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
