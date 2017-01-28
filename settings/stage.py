@@ -33,7 +33,6 @@ AWS_STORAGE_BUCKET_NAME = 'pace-ire'
 MEDIA_URL = 'http://%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
 MEDIA_ROOT = '/media/'
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-print MEDIA_ROOT, " -> MEDIA_ROOT"
 # Fot static file
 STATIC_URL = 'http://%s.s3.amazonaws.com/static/' % AWS_STORAGE_BUCKET_NAME
 STATIC_ROOT = '/static/'
