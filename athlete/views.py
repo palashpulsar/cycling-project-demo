@@ -34,11 +34,13 @@ def default(request):
 				# end = time.time()
 				# print "Time taken for fist function is: ", (end - start)
 
-				start = time.time()
-				gpx_ext_info(file)
-				end = time.time()
-				print "Time taken for second function is: ", (end - start)		
-				return HttpResponseRedirect("../mapviz")
+				# start = time.time()
+				# gpx_ext_info(file)
+				# end = time.time()
+				# print "Time taken for second function is: ", (end - start)
+
+				# return HttpResponseRedirect("../mapviz")
+				return HttpResponse("Thanks for uploading file.")
 		else:
 			form = gpx_file_form()
 	# LINK: http://stackoverflow.com/questions/22470637/django-show-validationerror-in-template
