@@ -5,12 +5,17 @@ from .models import gpx_file
 import gpxpy
 from vincenty import vincenty
 import os
-from settings.stage import MEDIA_ROOT
+import boto3
+# from settings.stage import MEDIA_ROOT
 
 # Create your views here.
+
+def test(request):
+	return HttpResponse("Test occurring")
+
 def default(request):
 	form = gpx_file_form()
-	# gpx_delete() # There will be only one GPX file, and nothing else
+	gpx_delete() # There will be only one GPX file, and nothing else
 	if request.method == 'POST':
 		form = gpx_file_form(request.POST, request.FILES)
 		if form.is_valid:
@@ -33,17 +38,15 @@ def map_viz(request):
 
 def gpx_delete():
 	gpx_file.objects.all().delete()
-	path_gpx = os.path.join(MEDIA_ROOT, 'gpx')
-	print MEDIA_ROOT, " -> MEDIA_ROOT"
-	print "I AM HERE"
-	for the_file in os.listdir(path_gpx):
-		file_path = os.path.join(path_gpx, the_file)
-		if not file_path.endswith('.txt'):
-			try:
-				if os.path.isfile(file_path):
-					os.unlink(file_path)
-			except Exception as e:
-				print(e)
+	# Deleting the file from the S3 gpx folder.
+	s3 = boto3.resource('s3')
+	bucket = s3.Bucket('pace-ire')
+	folder = 'gpx/'
+	# LINK: http://stackoverflow.com/questions/30249069/listing-contents-of-a-bucket-with-boto3
+	for obj in bucket.objects.filter(Prefix = folder):
+		if obj.key != folder:
+			# LINK: http://stackoverflow.com/questions/11426560/amazon-s3-boto-how-to-delete-folder
+			obj.delete()
 
 def gpx_extract_info(gpx_file):
 	# Identifying the location of the gpx file

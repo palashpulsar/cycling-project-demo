@@ -4,4 +4,5 @@ from . import views
 urlpatterns = [
 	url(r'default/', views.default, name='default'),
 	url(r'mapviz/', views.map_viz, name='mapviz'),
+	url(r'test/', views.test, name='test')
 ]
