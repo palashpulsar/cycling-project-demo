@@ -11,7 +11,9 @@ import boto3
 # Create your views here.
 
 def test(request):
-	return HttpResponse("Test occurring")
+	gpx_data = request.session.get('gpx_data')
+	return JsonResponse(gpx_data)
+	# return HttpResponse("Test occurring")
 
 def default(request):
 	form = gpx_file_form()
@@ -22,7 +24,7 @@ def default(request):
 			if len(request.FILES) != 0: # User has entered the file
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
-				request.session['gpx_data']=gpx_extract_info(file)			
+				# request.session['gpx_data']=gpx_extract_info(file)			
 				return HttpResponseRedirect("../mapviz")
 		else:
 			form = gpx_file_form()
