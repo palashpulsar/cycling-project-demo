@@ -122,7 +122,7 @@ def gpx_ext_info(gpx_file):
 				# 	lat_init = data['lat']
 				# 	lon_init = data['lon']
 				# 	dis_init = data['dis']
-				dataset.append(data.copy()) # LINK: http://stackoverflow.com/questions/5244810/python-appending-a-dictionary-to-a-list-i-see-a-pointer-like-behavior
-	gpx_data = gpx_dataObj(data_json = json.dumps(dataset))
-	gpx_data.save()
+	# 			dataset.append(data.copy()) # LINK: http://stackoverflow.com/questions/5244810/python-appending-a-dictionary-to-a-list-i-see-a-pointer-like-behavior
+	# gpx_data = gpx_dataObj(data_json = json.dumps(dataset))
+	# gpx_data.save()
 	return None
