@@ -116,7 +116,8 @@ def gpx_ext_info(gpx_file):
 				else:
 					boston = (lat_init, lon_init)
 					newyork = (data['lat'], data['lon'])
-					data['dis'] = vincenty(boston, newyork) + dis_init
+					# data['dis'] = vincenty(boston, newyork) + dis_init
+					data['dis'] = 0
 					lat_init = data['lat']
 					lon_init = data['lon']
 					dis_init = data['dis']
