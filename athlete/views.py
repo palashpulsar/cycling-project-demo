@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import gpx_file_form
 from .models import gpx_file, gpx_dataObj
 import gpxpy
-from vincenty import vincenty
+from geopy.distance import great_circle
 import os
 import boto3
 import time
@@ -108,20 +108,20 @@ def gpx_ext_info(gpx_file):
 				data['lat'] = point.latitude
 				data['lon'] = point.longitude
 				data['ele'] = point.elevation
-				if init == 1:
-					data['dis'] = 0
-					lat_init = data['lat']
-					lon_init = data['lon']
-					dis_init = data['dis']
-					init = 0
-				else:
-					boston = (lat_init, lon_init)
-					newyork = (data['lat'], data['lon'])
-					# data['dis'] = vincenty(boston, newyork) + dis_init
-					data['dis'] = 0
-					lat_init = data['lat']
-					lon_init = data['lon']
-					dis_init = data['dis']
+				# if init == 1:
+				# 	data['dis'] = 0
+				# 	lat_init = data['lat']
+				# 	lon_init = data['lon']
+				# 	dis_init = data['dis']
+				# 	init = 0
+				# else:
+				# 	boston = (lat_init, lon_init)
+				# 	newyork = (data['lat'], data['lon'])
+				# 	# data['dis'] = vincenty(boston, newyork) + dis_init
+				# 	data['dis'] = 0
+				# 	lat_init = data['lat']
+				# 	lon_init = data['lon']
+				# 	dis_init = data['dis']
 				dataset.append(data.copy()) # LINK: http://stackoverflow.com/questions/5244810/python-appending-a-dictionary-to-a-list-i-see-a-pointer-like-behavior
 	gpx_data = gpx_dataObj(data_json = json.dumps(dataset))
 	gpx_data.save()
