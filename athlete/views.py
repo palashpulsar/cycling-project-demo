@@ -95,6 +95,7 @@ def gpx_extract_info(gpx_file):
 
 def gpx_ext_info(gpx_file):
 	gpx = gpxpy.parse(gpx_file.docfile)
+	print "gpx: ", gpx
 	data = {}
 	dataset = []
 	init = 1
