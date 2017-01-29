@@ -34,10 +34,10 @@ def default(request):
 				# end = time.time()
 				# print "Time taken for fist function is: ", (end - start)
 
-				# start = time.time()
-				# gpx_ext_info(file)
-				# end = time.time()
-				# print "Time taken for second function is: ", (end - start)
+				start = time.time()
+				gpx_ext_info(file)
+				end = time.time()
+				print "Time taken for second function is: ", (end - start)
 
 				# return HttpResponseRedirect("../mapviz")
 				return HttpResponse("Thanks for uploading file.")
