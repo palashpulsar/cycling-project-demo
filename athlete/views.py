@@ -94,20 +94,20 @@ def gpx_extract_info(gpx_file):
 	return gpx_data
 
 def gpx_ext_info(gpx_file):
-	gpx = gpxpy.parse(gpx_file.docfile)
-	print "gpx: ", gpx
-	data = {}
-	dataset = []
-	init = 1
-	lat_init = None
-	lon_init = None
-	dis_init = None
-	for track in gpx.tracks:
-		for segment in track.segments:
-			for point in segment.points:
-				data['lat'] = point.latitude
-				data['lon'] = point.longitude
-				data['ele'] = point.elevation
+	# gpx = gpxpy.parse(gpx_file.docfile)
+	# print "gpx: ", gpx
+	# data = {}
+	# dataset = []
+	# init = 1
+	# lat_init = None
+	# lon_init = None
+	# dis_init = None
+	# for track in gpx.tracks:
+	# 	for segment in track.segments:
+	# 		for point in segment.points:
+	# 			data['lat'] = point.latitude
+	# 			data['lon'] = point.longitude
+	# 			data['ele'] = point.elevation
 				# if init == 1:
 				# 	data['dis'] = 0
 				# 	lat_init = data['lat']
