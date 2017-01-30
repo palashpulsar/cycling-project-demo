@@ -8,6 +8,7 @@ import os
 import boto3
 import time
 import json
+import csv
 # from settings.stage import MEDIA_ROOT
 
 # Create your views here.
@@ -27,24 +28,24 @@ def default(request):
 			if len(request.FILES) != 0: # User has entered the file
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
-
-				# LINK: http://stackoverflow.com/questions/7370801/measure-time-elapsed-in-python
-				# start = time.time()
-				# request.session['gpx_data']=gpx_extract_info(file)
-				# end = time.time()
-				# print "Time taken for fist function is: ", (end - start)
-
-				start = time.time()
-				gpx_ext_info(file)
-				end = time.time()
-				print "Time taken for second function is: ", (end - start)
-
+				csv_file_extraction(file)
 				# return HttpResponseRedirect("../mapviz")
 				return HttpResponse("Thanks for uploading file.")
 		else:
 			form = gpx_file_form()
 	# LINK: http://stackoverflow.com/questions/22470637/django-show-validationerror-in-template
 	return render(request, 'athlete/gpx.html', {'form': form})
+
+def csv_file_extraction(file):
+	print "I am inside csv_file_extraction function"
+	data = {}
+	dataset = []
+	# LINK: http://stackoverflow.com/questions/1526607/extracting-data-from-a-csv-file-in-python
+	for d in csv.DictReader(open(file), delimiter=','):
+		print d
+		# counts.append(int(d['Counts']))
+		# frequencies.append(int(d['frequency']))
+	return None
 
 def map_viz(request):
 	# LINK: https://docs.djangoproject.com/en/dev/ref/models/querysets/#latest
@@ -67,62 +68,3 @@ def gpx_delete():
 			# LINK: http://stackoverflow.com/questions/11426560/amazon-s3-boto-how-to-delete-folder
 			obj.delete()
 
-def gpx_extract_info(gpx_file):
-	# Identifying the location of the gpx file
-	gpx = gpxpy.parse(gpx_file.docfile)
-	t = 0
-	gpx_data = {}
-	gpx_data['latitude'] = []
-	gpx_data['longitude'] = []	
-	gpx_data['elevation'] = []
-	gpx_data['distance'] = [] 
-	for track in gpx.tracks:
-		for segment in track.segments:
-			for point in segment.points:
-				gpx_data['latitude'].append(point.latitude)
-				gpx_data['longitude'].append(point.longitude)
-				gpx_data['elevation'].append(point.elevation)
-				t = t+1
-	# Calculating the distance
-	for i in range(len(gpx_data['latitude'])):
-		if(i==0):
-			gpx_data['distance'].append(0)
-		else:
-			boston = (gpx_data['latitude'][i-1], gpx_data['longitude'][i-1])
-			newyork = (gpx_data['latitude'][i], gpx_data['longitude'][i])
-			gpx_data['distance'].append(gpx_data['distance'][i-1] + vincenty(boston, newyork))
-	return gpx_data
-
-def gpx_ext_info(gpx_file):
-	# gpx = gpxpy.parse(gpx_file.docfile)
-	# print "gpx: ", gpx
-	# data = {}
-	# dataset = []
-	# init = 1
-	# lat_init = None
-	# lon_init = None
-	# dis_init = None
-	# for track in gpx.tracks:
-	# 	for segment in track.segments:
-	# 		for point in segment.points:
-	# 			data['lat'] = point.latitude
-	# 			data['lon'] = point.longitude
-	# 			data['ele'] = point.elevation
-				# if init == 1:
-				# 	data['dis'] = 0
-				# 	lat_init = data['lat']
-				# 	lon_init = data['lon']
-				# 	dis_init = data['dis']
-				# 	init = 0
-				# else:
-				# 	boston = (lat_init, lon_init)
-				# 	newyork = (data['lat'], data['lon'])
-				# 	# data['dis'] = vincenty(boston, newyork) + dis_init
-				# 	data['dis'] = 0
-				# 	lat_init = data['lat']
-				# 	lon_init = data['lon']
-				# 	dis_init = data['dis']
-	# 			dataset.append(data.copy()) # LINK: http://stackoverflow.com/questions/5244810/python-appending-a-dictionary-to-a-list-i-see-a-pointer-like-behavior
-	# gpx_data = gpx_dataObj(data_json = json.dumps(dataset))
-	# gpx_data.save()
-	return None
