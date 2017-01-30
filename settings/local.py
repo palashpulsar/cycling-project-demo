@@ -17,3 +17,7 @@ DATABASES = {
 		'PORT': '',
     }
 }
+
+# LINK: http://www.bogotobogo.com/python/Django/Python_Django_Image_Files_Uploading_Example.php
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

@@ -104,11 +104,6 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
-# LINK: http://www.bogotobogo.com/python/Django/Python_Django_Image_Files_Uploading_Example.php
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-
-
 # Extra places for collectstatic to find static files.
 # LINK: https://devcenter.heroku.com/articles/django-assets
 # ATHLETE_APP_URL = os.path.join(BASE_DIR, 'athlete')

@@ -81,10 +81,10 @@ function route_extraction(){
         url: gpxPlotGraph,
         success: function(data){
             for (var i = 0; i < data.length; i++) {
-                gpx_latitude.push(data[i]['lat']);
-                gpx_longitude.push(data[i]['lon']);
-                gpx_elevation.push(data[i]['ele']);
-                gpx_distance.push(data[i]['dis']);
+                gpx_latitude.push(data[i]['latitude']);
+                gpx_longitude.push(data[i]['longitude']);
+                gpx_elevation.push(data[i]['elevation']);
+                gpx_distance.push(data[i]['distance']);
             }
             console.log(gpx_latitude[0]);
             lat_start = gpx_latitude[0];
