@@ -33,10 +33,11 @@ def default(request):
 			if len(request.FILES) != 0: # User has entered the file
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
-				dataset = csv_file_extraction(request.FILES['docfile'])
+				# dataset = csv_file_extraction(request.FILES['docfile'])
+				dataset = csv_file_extraction(file.docfile.path)
 				entering_gpx_dataObj(dataset)
-				return HttpResponseRedirect("../mapviz")
-				# return HttpResponse("Thanks for uploading file.")
+				# return HttpResponseRedirect("../mapviz")
+				return HttpResponse("Thanks for uploading file.")
 		else:
 			form = gpx_file_form()
 	return render(request, 'athlete/gpx.html', {'form': form})
@@ -50,20 +51,23 @@ def entering_gpx_dataObj(dataset, name = "No name"):
 def csv_file_extraction(file):
 	# LINK: http://stackoverflow.com/questions/14091387/creating-a-dictionary-from-a-csv-file
 	# LINK: http://stackoverflow.com/questions/17262256/how-to-read-one-single-line-of-csv-data-in-python
-	# LINK: http://stackoverflow.com/questions/17262256/how-to-read-one-single-line-of-csv-data-in-python
 	# LINK: http://stackoverflow.com/questions/2241891/how-to-initialize-a-dict-with-keys-from-a-list-and-empty-value-in-python
 	# LINK: http://stackoverflow.com/questions/209840/map-two-lists-into-a-dictionary-in-python
 	# LINK: http://stackoverflow.com/questions/1614236/in-python-how-do-i-convert-all-of-the-items-in-a-list-to-floats
 	print "I am inside csv_file_extraction function"
+	print file
 	data = {}
 	dataset = []
-	data_test = csv.reader(file)
-	keys = next(data_test) 
-	for rows in data_test:
-		data = dict(zip(keys, [float(i) for i in rows]))
-		# print data
-		dataset.append(data)
-	return dataset
+	with open(file, 'rb') as f:
+		data_test = csv.reader(f)
+		keys = next(data_test)
+		print "keys: ", keys
+		print "data: "
+		for rows in data_test:
+			data = dict(zip(keys, [float(i) for i in rows]))
+			print data
+			dataset.append(data)
+	return None
 
 def map_viz(request):
 	# LINK: https://docs.djangoproject.com/en/dev/ref/models/querysets/#latest
