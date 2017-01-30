@@ -40,6 +40,7 @@ def csv_file_extraction(file):
 	print "I am inside csv_file_extraction function"
 	data = {}
 	dataset = []
+	print type(file)
 	# LINK: http://stackoverflow.com/questions/1526607/extracting-data-from-a-csv-file-in-python
 	for d in csv.DictReader(open(file), delimiter=','):
 		print d
