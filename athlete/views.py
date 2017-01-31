@@ -7,7 +7,8 @@ import boto3
 import time
 import json
 import csv
-from settings.local import MEDIA_ROOT
+from settings.local import MEDIA_ROOT as MEDIA_ROOT_LOCAL
+from settings.stage import MEDIA_ROOT as MEDIA_ROOT_STAGE
 # from settings.stage import MEDIA_ROOT
 
 # Create your views here.
@@ -31,9 +32,11 @@ def default(request):
 			if len(request.FILES) != 0: # User has entered the file
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
+				print "MEDIA_ROOT_LOCAL: ", MEDIA_ROOT_LOCAL
+				print "MEDIA_ROOT_STAGE: ", MEDIA_ROOT_STAGE
 				# dataset = csv_file_extraction(request.FILES['docfile'])
-				dataset = csv_file_extraction(file.docfile.path)
-				entering_gpx_dataObj(dataset)
+				# dataset = csv_file_extraction(file.docfile)
+				# entering_gpx_dataObj(dataset)
 				# return HttpResponseRedirect("../mapviz")
 				return HttpResponse("Thanks for uploading file.")
 		else:
