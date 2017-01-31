@@ -21,7 +21,7 @@ def test(request):
 def default_local(request):
 	from settings.local import MEDIA_ROOT
 	form = gpx_file_form()
-	gpx_delete() # There will be only one GPX file, and nothing else
+	# gpx_delete() # There will be only one GPX file, and nothing else
 	gpx_dataObj.objects.all().delete()
 	if request.method == 'POST':
 		form = gpx_file_form(request.POST, request.FILES)
@@ -29,8 +29,9 @@ def default_local(request):
 			if len(request.FILES) != 0: # User has entered the file
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
-				file_path = MEDIA_ROOT+"/"+str(file.docfile)				
-				dataset = csv_file_extraction(file_path)
+				dataset = new_code()
+				# file_path = MEDIA_ROOT+"/"+str(file.docfile)				
+				# dataset = csv_file_extraction(file_path)
 				# entering_gpx_dataObj(dataset)
 				# return HttpResponseRedirect("../mapviz")
 				return HttpResponse("Thanks for uploading file.")
@@ -52,21 +53,9 @@ def default_stage(request):
 			if len(request.FILES) != 0: # User has entered the file
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
-
-				# CSV file read:
-				data = {}
-				dataset = []
-				with open(file.docfile, 'rb') as f:
-					data_test = csv.reader(f)
-					keys = next(data_test)
-					print "keys: ", keys
-					print "data: "
-					for rows in data_test:
-						data = dict(zip(keys, [float(i) for i in rows]))
-						print data
-						dataset.append(data)
-
 				file_path = MEDIA_URL+str(file.docfile)
+				dataset = new_code()
+				print "dataset: \n", dataset
 				# dataset = csv_file_extraction(file_path)
 				# entering_gpx_dataObj(dataset)
 				# return HttpResponseRedirect("../mapviz")
@@ -122,4 +111,29 @@ def gpx_delete():
 	for obj in bucket.objects.filter(Prefix = folder):
 		if obj.key != folder:
 			obj.delete()
+
+def new_code():
+	# LINK: http://stackoverflow.com/questions/8266529/python-convert-string-to-list
+	# LINK: http://stackoverflow.com/questions/31976273/open-s3-object-as-a-string-with-boto3
+	# LINK: http://stackoverflow.com/questions/4426663/how-do-i-remove-the-first-item-from-a-python-list
+	file = None
+	data = {}
+	dataset = []
+	s3 = boto3.resource('s3')
+	bucket = s3.Bucket('pace-ire')
+	folder = 'gpx/'
+	for obj in bucket.objects.filter(Prefix = folder):
+		if obj.key != folder:
+			file = obj
+	csv_file = file.get()['Body'].read()
+	string_csvData = csv.reader(csv_file.split())
+	dataList_string = list(string_csvData)
+	keys = dataList_string[0]
+	del dataList_string[0]
+	print "keys: ", keys
+	for rows in dataList_string:
+		data = dict(zip(keys, [float(i) for i in rows]))
+		print data
+		dataset.append(data)
+	return dataset
 
