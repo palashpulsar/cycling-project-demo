@@ -8,5 +8,5 @@ class gpx_file(models.Model):
 	docfile = models.FileField(upload_to='gpx/')
 
 class gpx_dataObj(models.Model):
-	filename = models.CharField(max_length=30, null = True)
+	filename = models.CharField(max_length=50, null = True)
 	data_json = JSONField()

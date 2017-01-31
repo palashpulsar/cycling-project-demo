@@ -27,6 +27,7 @@ def csv_extraction(development, filename):
 		if development == 'local':
 			if obj.key != folder:
 				file = obj
+				print "obj.key: ", obj.key
 		elif development == 'stage':
 			if obj.key == filename:
 				file = obj
@@ -38,6 +39,5 @@ def csv_extraction(development, filename):
 	print "keys: ", keys
 	for rows in dataList_string:
 		data = dict(zip(keys, [float(i) for i in rows]))
-		print data
 		dataset.append(data)
 	return dataset

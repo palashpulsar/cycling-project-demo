@@ -14,7 +14,6 @@ def test(request):
 	return JsonResponse(gpx_data, safe=False)
 
 def default_local(request):
-	from settings.local import MEDIA_ROOT
 	form = gpx_file_form()
 	# gpx_delete() # There will be only one GPX file, and nothing else
 	gpx_dataObj.objects.all().delete()
@@ -25,17 +24,14 @@ def default_local(request):
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
 				dataset = csv_extraction('local', str(file.docfile))
-				# file_path = MEDIA_ROOT+"/"+str(file.docfile)				
-				# dataset = csv_file_extraction(file_path)
-				# entering_gpx_dataObj(dataset)
-				# return HttpResponseRedirect("../mapviz")
-				return HttpResponse("Thanks for uploading file.")
+				entering_gpx_dataObj(dataset, str(file.docfile))
+				return HttpResponseRedirect("../mapviz")
+				# return HttpResponse("Thanks for uploading file.")
 		else:
 			form = gpx_file_form()
 	return render(request, 'athlete/gpx.html', {'form': form})
 
 def default_stage(request):
-	from settings.stage import MEDIA_URL
 	form = gpx_file_form()
 	gpx_delete() # There will be only one GPX file, and nothing else
 	gpx_dataObj.objects.all().delete()
@@ -46,17 +42,16 @@ def default_stage(request):
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
 				dataset = csv_extraction('stage', str(file.docfile))
-				print "dataset: \n", dataset
-				# dataset = csv_file_extraction(file_path)
-				# entering_gpx_dataObj(dataset)
+				entering_gpx_dataObj(dataset, str(file.docfile))
 				# return HttpResponseRedirect("../mapviz")
 				return HttpResponse("Thanks for uploading file.")
 		else:
 			form = gpx_file_form()
 	return render(request, 'athlete/gpx.html', {'form': form})
 
-def entering_gpx_dataObj(dataset, name = "No name"):
-	data_json_obj = gpx_dataObj(filename = name,
+def entering_gpx_dataObj(dataset, filename = "No name"):
+	print "len(dataset): ", len(dataset)
+	data_json_obj = gpx_dataObj(filename = filename,
 							data_json = json.dumps(dataset))
 	data_json_obj.save()
 	return None
