@@ -2,8 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import gpx_file_form
 from .models import gpx_file, gpx_dataObj
-import gpxpy
-from geopy.distance import great_circle
 import os
 import boto3
 import time
