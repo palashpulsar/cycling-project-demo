@@ -52,8 +52,22 @@ def default_stage(request):
 			if len(request.FILES) != 0: # User has entered the file
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
+
+				# CSV file read:
+				data = {}
+				dataset = []
+				with open(file.docfile, 'rb') as f:
+					data_test = csv.reader(f)
+					keys = next(data_test)
+					print "keys: ", keys
+					print "data: "
+					for rows in data_test:
+						data = dict(zip(keys, [float(i) for i in rows]))
+						print data
+						dataset.append(data)
+
 				file_path = MEDIA_URL+str(file.docfile)
-				dataset = csv_file_extraction(file_path)
+				# dataset = csv_file_extraction(file_path)
 				# entering_gpx_dataObj(dataset)
 				# return HttpResponseRedirect("../mapviz")
 				return HttpResponse("Thanks for uploading file.")
