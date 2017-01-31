@@ -7,8 +7,7 @@ import boto3
 import time
 import json
 import csv
-from settings.local import MEDIA_ROOT as MEDIA_ROOT_LOCAL
-from settings.stage import MEDIA_URL as MEDIA_URL_STAGE
+import unicodedata
 # from settings.stage import MEDIA_ROOT
 
 # Create your views here.
@@ -19,10 +18,8 @@ def test(request):
 	# return HttpResponse("Test occurring")
 	return JsonResponse(gpx_data, safe=False)
 
-def default(request):
-	# LINK: http://stackoverflow.com/questions/1526607/extracting-data-from-a-csv-file-in-python
-	# LINK: http://stackoverflow.com/questions/24704630/how-to-upload-and-read-csv-file-in-django-using-csv-dictreader
-	# LINK: http://stackoverflow.com/questions/22470637/django-show-validationerror-in-template
+def default_local(request):
+	from settings.local import MEDIA_ROOT
 	form = gpx_file_form()
 	gpx_delete() # There will be only one GPX file, and nothing else
 	gpx_dataObj.objects.all().delete()
@@ -32,10 +29,31 @@ def default(request):
 			if len(request.FILES) != 0: # User has entered the file
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
-				print "MEDIA_ROOT_LOCAL: ", MEDIA_ROOT_LOCAL
-				print "MEDIA_ROOT_STAGE: ", MEDIA_URL_STAGE
-				# dataset = csv_file_extraction(request.FILES['docfile'])
-				# dataset = csv_file_extraction(file.docfile)
+				file_path = MEDIA_ROOT+"/"+str(file.docfile)				
+				dataset = csv_file_extraction(file_path)
+				# entering_gpx_dataObj(dataset)
+				# return HttpResponseRedirect("../mapviz")
+				return HttpResponse("Thanks for uploading file.")
+		else:
+			form = gpx_file_form()
+	return render(request, 'athlete/gpx.html', {'form': form})
+
+def default_stage(request):
+	# LINK: http://stackoverflow.com/questions/1526607/extracting-data-from-a-csv-file-in-python
+	# LINK: http://stackoverflow.com/questions/24704630/how-to-upload-and-read-csv-file-in-django-using-csv-dictreader
+	# LINK: http://stackoverflow.com/questions/22470637/django-show-validationerror-in-template
+	from settings.stage import MEDIA_URL
+	form = gpx_file_form()
+	gpx_delete() # There will be only one GPX file, and nothing else
+	gpx_dataObj.objects.all().delete()
+	if request.method == 'POST':
+		form = gpx_file_form(request.POST, request.FILES)
+		if form.is_valid:
+			if len(request.FILES) != 0: # User has entered the file
+				file = gpx_file(docfile=request.FILES['docfile'])
+				file.save()
+				file_path = MEDIA_URL+str(file.docfile)
+				dataset = csv_file_extraction(str(file.docfile))
 				# entering_gpx_dataObj(dataset)
 				# return HttpResponseRedirect("../mapviz")
 				return HttpResponse("Thanks for uploading file.")
@@ -56,7 +74,7 @@ def csv_file_extraction(file):
 	# LINK: http://stackoverflow.com/questions/209840/map-two-lists-into-a-dictionary-in-python
 	# LINK: http://stackoverflow.com/questions/1614236/in-python-how-do-i-convert-all-of-the-items-in-a-list-to-floats
 	print "I am inside csv_file_extraction function"
-	print file
+	print "CSV file: ", file
 	data = {}
 	dataset = []
 	with open(file, 'rb') as f:
