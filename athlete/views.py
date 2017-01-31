@@ -43,8 +43,8 @@ def default_stage(request):
 				file.save()
 				dataset = csv_extraction('stage', str(file.docfile))
 				entering_gpx_dataObj(dataset, str(file.docfile))
-				# return HttpResponseRedirect("../mapviz")
-				return HttpResponse("Thanks for uploading file.")
+				return HttpResponseRedirect("../mapviz")
+				# return HttpResponse("Thanks for uploading file.")
 		else:
 			form = gpx_file_form()
 	return render(request, 'athlete/gpx.html', {'form': form})
