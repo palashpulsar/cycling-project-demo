@@ -53,7 +53,7 @@ def default_stage(request):
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
 				file_path = MEDIA_URL+str(file.docfile)
-				dataset = csv_file_extraction(str(file.docfile))
+				dataset = csv_file_extraction(file_path)
 				# entering_gpx_dataObj(dataset)
 				# return HttpResponseRedirect("../mapviz")
 				return HttpResponse("Thanks for uploading file.")
