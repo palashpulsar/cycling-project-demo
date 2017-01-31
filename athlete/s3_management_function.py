@@ -1,5 +1,6 @@
 import boto3
 import csv
+from .models import gpx_file, gpx_dataObj
 
 def gpx_delete():
 	gpx_file.objects.all().delete()
