@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import gpx_file_form
 from .models import gpx_file, gpx_dataObj
+from audience.models import VoiceInstruction
 from .s3_management_function import gpx_delete, csv_extraction
 import json
 
@@ -17,6 +18,7 @@ def default_local(request):
 	form = gpx_file_form()
 	# gpx_delete() # There will be only one GPX file, and nothing else
 	gpx_dataObj.objects.all().delete()
+	VoiceInstruction.objects.all().delete()
 	if request.method == 'POST':
 		form = gpx_file_form(request.POST, request.FILES)
 		if form.is_valid:
