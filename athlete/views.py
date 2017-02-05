@@ -73,6 +73,7 @@ def fillingGeolocation(request):
 		if request.is_ajax():
 			lat = float(request.POST.get('lat'))
 			lon = float(request.POST.get('lon'))
+			print "latitude: ", lat, "longitude: ", lon, "csrfmiddlewaretoken: ", request.POST.get('csrfmiddlewaretoken')
 			new_geo = geoLocation(latitude=lat, longitude=lon)
 			new_geo.save()
 	return HttpResponse("Filling up the geolocation table")

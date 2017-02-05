@@ -121,8 +121,8 @@ function showLivePosition(position){
     console.log("7. showLivePosition function activated");
     var lat = position.coords.latitude; 
     var lon = position.coords.longitude;
-    var data = {lat: lat, lon: lon, 
-                csrfmiddlewaretoken : getCookie('csrftoken')};
+    var data = {lat: lat, lon: lon, csrfmiddlewaretoken : getCookie('csrftoken')};
+    console.log("data sent as POST: " + data.lat + ", " + data.csrfmiddlewaretoken);
     $.post(geoFill, data, function(response){ 
     });
     updateRiderMarker(lat, lon);
