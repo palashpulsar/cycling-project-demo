@@ -22,7 +22,6 @@ var markers = [];
 
 function markGoogleMap(x0){
     deleteMarkers(); // Delete previous markers
-    // NOTE: https://developers.google.com/maps/documentation/javascript/examples/marker-remove
     // Identify latitude, lingitude corresponding to x0
     for (var i=0; i<gpx_distance.length; i++){
         if(x0 <= gpx_distance[i]){
@@ -100,42 +99,22 @@ function route_extraction(){
             centerLocation = new google.maps.LatLng({lat: lat_start, lng: lon_start});
             getMap();
             getRouteOnMap(); // AJAX successful call takes time. Hence calling getRouteOnMap() only after a successful call.
-            d3js_graph_plotting_area();
-            locatePreviousHistory();
+            [svg, Data, margin, height, width, x, y] = svgPlot();
+            getPreviousDistanceMarked(svg, height, Data, x, y);
+            mouseHovering(svg);
         }
     });
 }
 
-// D3js
+function svgPlot(){
 
-function d3js_graph_plotting_area(){
-    console.log("I am inside d3js_graph_plotting_area.");
-
-    // LINK: https://bl.ocks.org/d3noob/23e42c8f67210ac6c678db2cd07a747e
-    // LINK for area: https://bl.ocks.org/mbostock/3883195
+    //PART 1
+    console.log("I am inside svg.");
 
     // Set the dimension
     var margin = {top: 20, right: 20, bottom: 50, left: 70},
                     width = 1300 - margin.left - margin.right,
                     height = 300 - margin.top - margin.bottom;
-
-    // Set the ranges
-    var x = d3.scaleLinear().range([0, width]);
-    var y = d3.scaleLinear().range([height, 0]);
-
-    // Define the area
-    var valueline = d3.area()
-                        .x(function(d) { return x(d.x); })
-                        .y0(height)
-                        .y1(function(d) { return y(d.y); });
-
-    bisectDistance = d3.bisector(function(d) { return d.x; }).left;
-
-    // Define the div for the tooltip
-    // NOTE: http://bl.ocks.org/d3noob/a22c42db65eb00d4e369
-    var tooltip = d3.select("#d3js_Plot").append("div")
-                                .attr("class", "tooltip")               
-                                .style("opacity", 0);
 
     // append the svg obgect to the body of the page
     // appends a 'group' element to 'svg'
@@ -146,9 +125,8 @@ function d3js_graph_plotting_area(){
                                 .append("g")
                                 .attr("transform",
                                         "translate(" + margin.left + "," + margin.top + ")");
-
+    // PART 2
     // Get the data
-    // NOTE: http://stackoverflow.com/questions/920930/how-to-create-json-by-javascript-for-loop
     var min_elevation = Math.min.apply(Math, gpx_elevation);
     var max_elevation = Math.max.apply(Math, gpx_elevation) - min_elevation;
     var Data = [];
@@ -161,12 +139,22 @@ function d3js_graph_plotting_area(){
     });
     }
 
+    // Set the ranges
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
+
     // Scale the range of the data
-    // NOTE: http://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
     var max_xValue = Math.max.apply(Math,Data.map(function(o){return o.x;}));
     var max_yValue = Math.max.apply(Math,Data.map(function(o){return o.y;}));
     x.domain([0, max_xValue]);
     y.domain([0, max_elevation+30]);
+
+
+    // Define the area
+    var valueline = d3.area()
+                        .x(function(d) { return x(d.x); })
+                        .y0(height)
+                        .y1(function(d) { return y(d.y); });
 
     // Add the valueline path.
     svg.append("path")
@@ -177,6 +165,80 @@ function d3js_graph_plotting_area(){
         .attr("stroke-width", 2)
         .attr("fill", "lightsteelblue");
 
+    // Vertical line
+    var verticalLine = svg.append("line")
+                            .style("stroke-width", 1)
+                            .style("stroke", "blue")
+                            .style("fill", "none");
+
+    // No idea what this is
+    // Position of Vertical lIne
+    var posTopLine = $('svg').position().top + margin.top;
+    var heightLine = 300;
+
+    // PART 3
+    // Add the x Axis
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+
+    // text label for the x axis
+    svg.append("text")             
+        .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top + 20) + ")")
+        .style("text-anchor", "middle")
+        .text("Distance (km)");
+
+    // Add the y Axis
+    svg.append("g")
+        .call(d3.axisLeft(y));
+
+    // text label for the y axis
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Elevation (m)");
+
+    return [svg, Data, margin, height, width, x, y];
+}
+
+function getPreviousDistanceMarked(svg, height, Data, x, y){
+    console.log("I am in getPreviousDistanceMarked function");
+    var imageOffsetX = 10;
+    var imageOffsetY = 20; 
+    bisectDistance = d3.bisector(function(d) { return d.x; }).left;
+
+    var markedDistance = locatePreviousHistory();
+
+    for(var i=0; i<markedDistance.length; i++){
+        var x0 = markedDistance[i];
+        var mouseX = x(x0);            
+        var k = bisectDistance(Data, x0, 1);
+        var y0 = Data[k].y;
+        var mouseY = y(y0);
+        var verticalLine = svg.append("line")
+                                .style("stroke-width", 1)
+                                .style("stroke", "black")
+                                .style("fill", "none")
+                                .attr("x1", mouseX)  //<<== change your code here
+                                .attr("y1", height)
+                                .attr("x2", mouseX)  //<<== and here
+                                .attr("y2", mouseY);
+        var img = svg.append("svg:image")
+                    .attr("xlink:href", audioImagePath)
+                    .attr("width", 15)
+                    .attr("height", 15)
+                    .attr("x", mouseX - imageOffsetX)
+                    .attr("y", mouseY - imageOffsetY)
+        }                       
+}
+
+function mouseHovering(svg){
+    console.log("I am inside mouseHovering");
     var focus = svg.append("g") 
                     .style("display", "none");
 
@@ -193,12 +255,11 @@ function d3js_graph_plotting_area(){
                             .style("stroke", "blue")
                             .style("fill", "none");
 
-    // Position of Vertical lIne
-    var posTopLine = $('svg').position().top + margin.top;
-    var heightLine = 300;
+    // Define the div for the tooltip
+    var tooltip = d3.select("#d3js_Plot").append("div")
+                                .attr("class", "tooltip")               
+                                .style("opacity", 0);
 
-    // NOTES: http://stackoverflow.com/questions/34445102/roi-value-in-tooltip-d3js-area-chart/34445937#34445937
-    // NOTES: http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle/10806220
     svg
         .on("mouseover", function(d){
             var x0 = x.invert(d3.mouse(this)[0]);  
@@ -221,7 +282,6 @@ function d3js_graph_plotting_area(){
             focus.style("display", "none");
             verticalLine.style("stroke-width", 0);
         })
-        // NOTE: http://bl.ocks.org/d3noob/e5daff57a04c2639125e
         .on("mousemove", function(d) {       
             var x0 = x.invert(d3.mouse(this)[0]); 
             var i = bisectDistance(Data, x0, 1);
@@ -253,7 +313,6 @@ function d3js_graph_plotting_area(){
         });
 
     // On Click, pop up appears
-    // NOTE: http://bl.ocks.org/WilliamQLiu/76ae20060e19bf42d774
     svg.on("click", function() {
         var imageOffsetX = 10;
         var imageOffsetY = 20; 
@@ -265,7 +324,6 @@ function d3js_graph_plotting_area(){
         // Identify latitude, lingitude corresponding to x0
         saveAudio(x0);
         addSoundIcon(x0);        
-        // NOTE: http://stackoverflow.com/questions/26418777/draw-a-vertical-line-representing-the-current-date-in-d3-gantt-chart
         var verticalLine = svg.append("line")
                                 .attr("x1", mouseX)  //<<== change your code here
                                 .attr("y1", height)
@@ -274,7 +332,6 @@ function d3js_graph_plotting_area(){
                                 .style("stroke-width", 1)
                                 .style("stroke", "black")
                                 .style("fill", "none");
-        // NOTE: http://stackoverflow.com/questions/18416749/adding-fontawesome-icons-to-a-d3-graph/19385042#19385042
         var img = svg.append("svg:image")
                     .attr("xlink:href", audioImagePath)
                     .attr("width", 15)
@@ -284,33 +341,6 @@ function d3js_graph_plotting_area(){
         // modal.style.display = "block";
         // modal_function(Math.round(x0 * 100) / 100, svg, mouseX, mouseY, imageOffsetX, imageOffsetY);
     });
-    
-
-    // Add the x Axis
-    svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
-
-    // text label for the x axis
-    svg.append("text")             
-        .attr("transform",
-            "translate(" + (width/2) + " ," + 
-                           (height + margin.top + 20) + ")")
-        .style("text-anchor", "middle")
-        .text("Distance (km)");
-
-    // Add the y Axis
-    svg.append("g")
-        .call(d3.axisLeft(y));
-
-    // text label for the y axis
-    svg.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left)
-        .attr("x",0 - (height / 2))
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .text("Elevation (m)");      
 }
 
 function saveAudio(x0){
@@ -355,16 +385,21 @@ function addSoundIcon(x0){
 }
 
 function locatePreviousHistory(){
-    console.log("I am inside locatePreviousHistory function.")
+    console.log("I am inside locatePreviousHistory function.");
+    var markedDistance = [];
     $.ajax({
         type: "GET",
         url: audioHistory,
+        async: false,
         success: function(data){
             for (var i = 0; i < data.length; i++) {
+                markedDistance.push(data[i]);
                 addSoundIcon(data[i]);
             }                
         }
     });
+    console.log("markedDistance: " + markedDistance);
+    return markedDistance;
 }
 
 // Generating csrftoken 
@@ -391,3 +426,22 @@ Object.size = function(obj) {
     }
     return size;
 };
+
+// LINKs:
+// https://bl.ocks.org/d3noob/23e42c8f67210ac6c678db2cd07a747e
+// https://bl.ocks.org/mbostock/3883195
+// http://bl.ocks.org/d3noob/a22c42db65eb00d4e369
+// http://stackoverflow.com/questions/920930/how-to-create-json-by-javascript-for-loop
+// http://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
+// http://stackoverflow.com/questions/34445102/roi-value-in-tooltip-d3js-area-chart/34445937#34445937
+// http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle/10806220
+// http://bl.ocks.org/d3noob/e5daff57a04c2639125e
+// http://stackoverflow.com/questions/18416749/adding-fontawesome-icons-to-a-d3-graph/19385042#19385042
+// http://bl.ocks.org/WilliamQLiu/76ae20060e19bf42d774
+// http://stackoverflow.com/questions/26418777/draw-a-vertical-line-representing-the-current-date-in-d3-gantt-chart
+// https://developers.google.com/maps/documentation/javascript/examples/marker-remove
+// http://bl.ocks.org/d3noob/e5daff57a04c2639125e
+// http://bl.ocks.org/WilliamQLiu/76ae20060e19bf42d774
+// http://stackoverflow.com/questions/26418777/draw-a-vertical-line-representing-the-current-date-in-d3-gantt-chart
+// http://stackoverflow.com/questions/18416749/adding-fontawesome-icons-to-a-d3-graph/19385042#19385042
+// http://stackoverflow.com/questions/8187201/return-value-from-inside-of-ajax-function

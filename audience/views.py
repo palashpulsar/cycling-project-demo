@@ -18,4 +18,5 @@ def voiceHistory(request):
 	# This function determines the 'distances' of previously saved voices
 	# Collect the location of all previously saved
 	distance = previousVoiceLocations()
+	print distance
 	return JsonResponse(distance, safe=False)
