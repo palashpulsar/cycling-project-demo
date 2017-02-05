@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import gpx_file_form
-from .models import gpx_file, gpx_dataObj
+from .models import gpx_file, gpx_dataObj, geoLocation
 from audience.models import VoiceInstruction
 from .s3_management_function import gpx_delete, csv_extraction
 import json
@@ -19,6 +19,7 @@ def default_local(request):
 	# gpx_delete() # There will be only one GPX file, and nothing else
 	gpx_dataObj.objects.all().delete()
 	VoiceInstruction.objects.all().delete()
+	geoLocation.objects.all().delete()
 	if request.method == 'POST':
 		form = gpx_file_form(request.POST, request.FILES)
 		if form.is_valid:
@@ -38,6 +39,7 @@ def default_stage(request):
 	gpx_delete() # There will be only one GPX file, and nothing else
 	gpx_dataObj.objects.all().delete()
 	VoiceInstruction.objects.all().delete()
+	geoLocation.objects.all().delete()
 	if request.method == 'POST':
 		form = gpx_file_form(request.POST, request.FILES)
 		if form.is_valid:
@@ -65,5 +67,28 @@ def map_viz(request):
 	if request.is_ajax():
 		return JsonResponse(gpx_data, safe=False)
 	return render(request, 'athlete/mapviz.html')
+
+def fillingGeolocation(request):
+	if request.method == 'POST':
+		if request.is_ajax():
+			lat = float(request.POST.get('lat'))
+			lon = float(request.POST.get('lon'))
+			new_geo = geoLocation(latitude=lat, longitude=lon)
+			new_geo.save()
+	return HttpResponse("Filling up the geolocation table")
+
+def retrievingDrivenGeolocation(request):
+	if request.is_ajax():
+		drivenGeoLocation = {}
+		drivenGeoLocation['latitude'] = []
+		drivenGeoLocation['longitude'] = []
+		geoLocation_objs = geoLocation.objects.all()
+		for obj in geoLocation_objs:
+			drivenGeoLocation['latitude'].append(obj.latitude)
+			drivenGeoLocation['longitude'].append(obj.longitude)
+		print "drivenGeoLocation: ", drivenGeoLocation
+		return JsonResponse(drivenGeoLocation)
+	return None
+
 
 

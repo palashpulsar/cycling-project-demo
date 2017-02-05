@@ -13,15 +13,16 @@
 </head>
 
 <script>
-	var gpxPlotGraph = "{% url 'mapviz'%}"
+	var gpxPlotGraph = "{% url 'mapviz'%}";
+	var geoFill = "{% url 'fillingGeolocation'%}";
 </script>
 
 <body>
 	<div data-role="page" id="googlemapPlot">
 	{% static 'athlete/css/mapviz.css' %}
 	<div role="main" class="ui-content">
+		<input type="button" value="Ride" id="ride" />
 		<div id="gpxPlot">map appears here</div>
-		<div role="main" class="ui-content" id="d3js_Plot"></div>
 	</div>
 	</div>
 	

@@ -10,3 +10,7 @@ class gpx_file(models.Model):
 class gpx_dataObj(models.Model):
 	filename = models.CharField(max_length=50, null = True)
 	data_json = JSONField()
+
+class geoLocation(models.Model):
+	latitude = models.DecimalField(max_digits=9, decimal_places=6) 
+	longitude = models.DecimalField(max_digits=9, decimal_places=6)

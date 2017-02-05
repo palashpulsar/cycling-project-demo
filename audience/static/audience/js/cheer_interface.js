@@ -19,6 +19,8 @@ var drivenRoadColor = "#037DD7";
 var next_button_value = -1;
 var distanceSegment = 20; // TAken from Python. Needs modification to autogenerate this value from python
 var markers = [];
+var markersRide = [];
+var drivenRoad = [];
 
 function markGoogleMap(x0){
     deleteMarkers(); // Delete previous markers
@@ -54,6 +56,13 @@ function getMap() {
     map = new google.maps.Map(document.getElementById('gpxPlot'), {
         center: centerLocation,
         zoom: 9
+    });
+    drivenRoad = new google.maps.Polyline({
+        map: map,
+        path: [],
+        strokeColor: drivenRoadColor,
+        strokeOpacity: 1,
+        strokeWeight: 3
     });
 }
 
@@ -102,6 +111,7 @@ function route_extraction(){
             [svg, Data, margin, height, width, x, y] = svgPlot();
             getPreviousDistanceMarked(svg, height, Data, x, y);
             mouseHovering(svg);
+            drawDrivenRoad();
         }
     });
 }
@@ -427,21 +437,55 @@ Object.size = function(obj) {
     return size;
 };
 
-// LINKs:
-// https://bl.ocks.org/d3noob/23e42c8f67210ac6c678db2cd07a747e
-// https://bl.ocks.org/mbostock/3883195
-// http://bl.ocks.org/d3noob/a22c42db65eb00d4e369
-// http://stackoverflow.com/questions/920930/how-to-create-json-by-javascript-for-loop
-// http://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
-// http://stackoverflow.com/questions/34445102/roi-value-in-tooltip-d3js-area-chart/34445937#34445937
-// http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle/10806220
-// http://bl.ocks.org/d3noob/e5daff57a04c2639125e
-// http://stackoverflow.com/questions/18416749/adding-fontawesome-icons-to-a-d3-graph/19385042#19385042
-// http://bl.ocks.org/WilliamQLiu/76ae20060e19bf42d774
-// http://stackoverflow.com/questions/26418777/draw-a-vertical-line-representing-the-current-date-in-d3-gantt-chart
-// https://developers.google.com/maps/documentation/javascript/examples/marker-remove
-// http://bl.ocks.org/d3noob/e5daff57a04c2639125e
-// http://bl.ocks.org/WilliamQLiu/76ae20060e19bf42d774
-// http://stackoverflow.com/questions/26418777/draw-a-vertical-line-representing-the-current-date-in-d3-gantt-chart
-// http://stackoverflow.com/questions/18416749/adding-fontawesome-icons-to-a-d3-graph/19385042#19385042
-// http://stackoverflow.com/questions/8187201/return-value-from-inside-of-ajax-function
+// Stage 2: For live tracking
+// Get the driven path on the map
+function drawDrivenRoad(){
+    console.log("I am in drawDrivenRoad function");
+    console.log(retrieveDrivenGeo);
+    var drivenLatitude = null;
+    var drivenLongitude = null;
+    $.ajax({
+        type: "GET",
+        url: retrieveDrivenGeo,
+        success: function(data){
+            console.log(data['latitude'].length);
+            for (var i = 0; i < data['latitude'].length; i++) {
+                drivenLatitude = parseFloat(data['latitude'][i]);
+                drivenLongitude = parseFloat(data['longitude'][i]);
+                console.log(drivenLatitude + ", " + drivenLongitude);
+                console.log(typeof drivenLatitude);
+                var path = drivenRoad.getPath();
+                path.push(new google.maps.LatLng(drivenLatitude, drivenLongitude));         
+            }
+            drivenRoad.setPath(path);
+            updateRiderMarker(drivenLatitude, drivenLongitude);
+        }
+    });
+}
+
+// Update market
+function updateRiderMarker(drivenLatitude, drivenLongitude){
+    console.log("   a. updateMarker function activated");
+    deleteRiderMarkers();
+    var marker = new google.maps.Marker({
+        position: {lat: drivenLatitude, lng: drivenLongitude},
+        label: 'PS',
+        map: map,
+        title: 'Hello World!'
+    });
+    markersRide.push(marker);
+    map.panTo({lat: drivenLatitude, lng: drivenLongitude});
+}
+// Deletes all markers in the array by removing references to them.
+function deleteRiderMarkers() {
+    console.log("   b. deleteMarkers function activated");
+    setAllRiderMarker(null);
+    markersRide = [];
+}
+// Sets the map on all markers in the array.
+function setAllRiderMarker(map) {
+    console.log("   c. setAllMarker function activated");
+    for (var i = 0; i < markersRide.length; i++) {
+        markersRide[i].setMap(map);
+    }
+}
