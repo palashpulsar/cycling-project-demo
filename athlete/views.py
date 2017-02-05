@@ -37,6 +37,7 @@ def default_stage(request):
 	form = gpx_file_form()
 	gpx_delete() # There will be only one GPX file, and nothing else
 	gpx_dataObj.objects.all().delete()
+	VoiceInstruction.objects.all().delete()
 	if request.method == 'POST':
 		form = gpx_file_form(request.POST, request.FILES)
 		if form.is_valid:
