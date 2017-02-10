@@ -79,7 +79,9 @@ function getRouteOnMap() {
 }
 
 $(document).on("pageinit", "#googlemapPlot", function(event){
-    console.log(audioHistory);
+    console.log("audioHistory" + audioHistory);
+    console.log("csrftoken");
+    console.log(csrfFromServer);
     route_extraction();
 });
     

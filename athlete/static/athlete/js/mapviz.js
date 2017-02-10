@@ -68,6 +68,8 @@ function getRouteOnMap() {
 }
 
 $(document).on("pageinit", "#googlemapPlot", function(event){
+    console.log("csrftoken");
+    console.log(csrfFromServer);
     route_extraction();
 });
     

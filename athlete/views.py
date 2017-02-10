@@ -4,6 +4,7 @@ from .forms import gpx_file_form
 from .models import gpx_file, gpx_dataObj, geoLocation
 from audience.models import VoiceInstruction
 from .s3_management_function import gpx_delete, csv_extraction
+from django.middleware.csrf import get_token
 import json
 
 # Create your views here.
@@ -69,6 +70,7 @@ def map_viz(request):
 	return render(request, 'athlete/mapviz.html')
 
 def fillingGeolocation(request):
+	print "request: ", request
 	if request.method == 'POST':
 		if request.is_ajax():
 			lat = float(request.POST.get('lat'))
