@@ -1,6 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from .models import VoiceInstruction 
+import pyaudio
+# NOTE: http://stackoverflow.com/questions/33513522/when-installing-pyaudio-pip-cannot-find-portaudio-h-in-usr-local-include
+import wave
+import tempfile
+
+# Global variables
+tf = tempfile.NamedTemporaryFile(dir = settings.MEDIA_ROOT, prefix="temporary_", suffix = ".wav", delete = False)
+path_to_temporary_audio = tf.name
+
 
 # Create your views here.
 
@@ -25,3 +34,96 @@ def previousVoiceLocations():
 		distance.append(obj.distance)
 	return distance
 
+def voice_record(request):	
+	FORMAT = pyaudio.paInt16
+	CHANNELS = 2
+	RATE = 44100
+	CHUNK = 1024	
+	RECORD_SECONDS = 5
+ 
+	audio = pyaudio.PyAudio()
+ 
+	# start Recording
+	stream = audio.open(format=FORMAT, channels=CHANNELS,
+						rate=RATE, input=True,
+						frames_per_buffer=CHUNK)
+	print "recording..."
+	frames = []
+ 
+	for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+		data = stream.read(CHUNK)
+		frames.append(data)
+	print "finished recording"
+ 
+	# stop Recording
+	stream.stop_stream()
+	stream.close()
+	audio.terminate()
+ 
+	waveFile = wave.open(path_to_temporary_audio, 'wb')
+	waveFile.setnchannels(CHANNELS)
+	waveFile.setsampwidth(audio.get_sample_size(FORMAT))
+	waveFile.setframerate(RATE)
+	waveFile.writeframes(b''.join(frames))
+	waveFile.close()
+	request.session['temporary_audio_file'] = path_to_temporary_audio
+	print "Wave output file name: %r" % path_to_temporary_audio
+	return HttpResponse("Voice was recorded successfully!")
+
+def voice_play_test(request):
+	filename_url = {}
+	filename_url['url'] = path_to_temporary_audio[len(settings.BASE_DIR):]
+	if request.is_ajax():
+		print "Some magic happens"
+		return JsonResponse(filename_url)
+	print "Wave output file name: %r" % path_to_temporary_audio
+	return JsonResponse(filename_url)
+
+
+def voice_save(request):
+	# Voices are now saved in django VoiceInstruction model
+	if request.method == 'POST':
+		if request.is_ajax():
+			dis_Mark = request.POST.get('dis_Mark')
+			dis_Mark_Pos = request.POST.get('dis_Mark_Pos')
+			dis_lat = request.POST.get('dis_lat')
+			dis_lon = request.POST.get('dis_lon')
+			voice = python_to_django_file_conversion(path_to_temporary_audio)
+			voice_rename = modify_filename(voice, dis_Mark_Pos)
+			new_voice = VoiceInstruction(voice=voice_rename, distance=dis_Mark, position_of_distance=dis_Mark_Pos, voice_status=0, latitude=dis_lat, longitude=dis_lon)
+			new_voice.save()
+			print "voice file path is %r" % new_voice.voice.path
+			os.remove(path_to_temporary_audio)
+			return HttpResponse('Successful Update of voice instruction')
+	# return HttpResponseRedirect('Geolocation not updated :(')
+	print "Wave output file name: %r" % path_to_temporary_audio
+	return HttpResponse("Voice should be saved")
+
+def modal_close(request):
+	# If temporary file exists, then delete it.
+	if os.path.isfile(path_to_temporary_audio): # http://stackoverflow.com/questions/82831/how-to-check-whether-a-file-exists-using-python
+		os.remove(path_to_temporary_audio)
+		print "Recorded file deleted"
+	# If not, then proceed normally.
+	return HttpResponse("Successful deletion and clearing of content.")
+
+def python_to_django_file_conversion(python_file):
+	f = open(python_file)
+	django_file = File(f)
+	return django_file
+
+def modify_filename(filename, mark):
+	# NOTE: http://stackoverflow.com/questions/25652809/django-file-upload-and-rename
+	ext = filename.name.split('.')[-1]
+	file_rename = "%s_%s.%s" % ("voice", str(mark), ext)
+	filename.name = file_rename
+	return filename
+
+def saved_voice_positions(segment_start_pos, segment_end_pos):
+	voice_files = VoiceInstruction.objects.order_by('position_of_distance')
+	voice_pos = []
+	for i in voice_files:
+		if(i.position_of_distance >= segment_start_pos and i.position_of_distance <= segment_end_pos):
+			voice_pos.append(i.position_of_distance)
+			# voice_pos.append(i.position_of_distance - segment_start_pos) # Position of voice with respect to the current segmented distance
+	return voice_pos
