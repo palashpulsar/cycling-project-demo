@@ -7,11 +7,19 @@ import wave
 import tempfile
 
 # Global variables
-tf = tempfile.NamedTemporaryFile(dir = settings.MEDIA_ROOT, prefix="temporary_", suffix = ".wav", delete = False)
-path_to_temporary_audio = tf.name
+# tf = tempfile.NamedTemporaryFile(dir = settings.MEDIA_ROOT, prefix="temporary_", suffix = ".wav", delete = False)
+# path_to_temporary_audio = tf.name
 
 
 # Create your views here.
+
+def test_record(request):
+	print "Codes for recording voice to be present here."
+	return HttpResponse("Voice to be recorded")
+
+def test_play(request):
+	print "Codes for playing the recorded voice to be present here."
+	return HttpResponse("Voice to be recorded")
 
 def voice_save_del(request):
 	print "We are in voice_save_del() function"

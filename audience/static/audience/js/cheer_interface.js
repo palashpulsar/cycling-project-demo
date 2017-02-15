@@ -350,8 +350,8 @@ function mouseHovering(svg){
                     .attr("height", 15)
                     .attr("x", mouseX - imageOffsetX)
                     .attr("y", mouseY - imageOffsetY)
-        // modal.style.display = "block";
-        // modal_function(Math.round(x0 * 100) / 100, svg, mouseX, mouseY, imageOffsetX, imageOffsetY);
+        modal.style.display = "block";
+        modal_function(svg, Math.round(x0 * 100) / 100, mouseX, mouseY, imageOffsetX, imageOffsetY);
     });
 }
 
@@ -490,4 +490,91 @@ function setAllRiderMarker(map) {
     for (var i = 0; i < markersRide.length; i++) {
         markersRide[i].setMap(map);
     }
+}
+
+// Modal
+
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    document.getElementById('voiceRecordStatus').value = "";
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        document.getElementById('voiceRecordStatus').value = "";
+        modal.style.display = "none";
+    }
+}
+
+function modal_function(svg, distance_mark, mouseX, mouseY, imageOffsetX, imageOffsetY){
+    
+    // Showing the marked distance to the user
+    document.getElementById('textinput-1').value = String(distance_mark) + ' km';
+
+    // Corresponding latitude and longitude of the marked distance
+
+    // Voice recording feature
+    $( "#voiceRecorded" ).one ("click", function() {
+        document.getElementById('voiceRecordStatus').value = "Recording...";
+        console.log("voiceRecording url: " + voiceRecording);
+        $.ajax({
+            type: "GET",
+            url: voiceRecording,
+            success: function(){
+                document.getElementById('voiceRecordStatus').value = "Voice successfully recorded";
+            }
+        });
+    });
+
+    // Voice playing feature
+    $( "#voicePlayed" ).one ("click", function() {
+        $.ajax({
+            type: "GET",
+            url: voicePlaying,
+            success: function(data){
+                var snd = new Audio(data['url']); // Works perfectly :)))
+                snd.play();
+            }
+        });
+    });
+
+    // Voice saving feature
+    $( "#voiceSaved" ).one ("click", function() {
+        for (var i=0; i<gpx_distance.length; i++){
+            if (distance_mark <= gpx_distance[i]){
+                var dis_Mark_Pos = i;
+                break;
+            }
+        }
+        var dis_Mark = distance_mark;
+        var dis_lat = gpx_latitude[dis_Mark_Pos];
+        var dis_lon = gpx_longitude[dis_Mark_Pos];
+        alert("Voice saved");
+        // data = {dis_Mark: dis_Mark, dis_Mark_Pos: dis_Mark_Pos, dis_lat: dis_lat, dis_lon: dis_lon, csrfmiddlewaretoken : getCookie('csrftoken')};
+        // $.post(voice_saving, data, function(response){
+        // });
+
+        // NOTE: http://stackoverflow.com/questions/18416749/adding-fontawesome-icons-to-a-d3-graph/19385042#19385042
+        // The audio icon image appears now because if the code is written on svg.onclick, then
+        // the audio icon appears on the screen even befre the saved button is clicked.
+        // This is undesirable 
+        // var img = svg.append("svg:image")
+        //             // .attr("xlink:href", "http://www.clker.com/cliparts/1/4/5/a/1331068897296558865Sitting%20Racoon.svg")
+        //             .attr("xlink:href", "/media/image/icon/audio-volume.svg")
+        //             .attr("width", 15)
+        //             .attr("height", 15)
+        //             .attr("x", mouseX - imageOffsetX)
+        //             .attr("y", mouseY - imageOffsetY)
+
+        document.getElementById('voiceRecordStatus').value = "";
+        modal.style.display = "none";
+    });
 }

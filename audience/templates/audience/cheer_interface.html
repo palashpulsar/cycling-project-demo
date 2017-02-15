@@ -19,6 +19,8 @@
 	var audioHistory = "{% url 'history'%}";
 	var retrieveDrivenGeo = "{% url 'retrievingDrivenGeolocation'%}";
 	var csrfFromServer = "{% csrf_token %}";
+	var voiceRecording = "{% url 'record'%}";
+	var voicePlaying = "{% url 'play'%}";
 </script>
 
 <body>
@@ -28,6 +30,39 @@
 		<div id="gpxPlot">map appears here</div>
 		<div role="main" class="ui-content" id="d3js_Plot"></div>
 	</div>
+
+	<!-- http://www.w3schools.com/howto/howto_css_modals.asp -->
+	<!-- The Modal -->
+	<div id="myModal" class="modal">
+
+  		<!-- Modal content -->
+ 		 <div class="modal-content">
+    		<span class="close">x</span>
+    		<form>
+				<fieldset data-role="controlgroup" data-type="horizontal">		
+				<div class="ui-field-contain">
+					<label for="textinput-1">Distance Mark:</label>
+						<input type="text" name="textinput-1" id="textinput-1" placeholder="Distance Mark" value="">
+				</div>
+				<div class="ui-field-contain">
+					<label for="textinput-2">Record your 15 sec voice: </label>
+						<input type="button" data-inline="true" value="Record" id="voiceRecorded">
+						<input type="text" name="textinput-2" id="voiceRecordStatus" placeholder="Voice Recording Status" value="">
+				</div>
+				<div class="ui-field-contain">
+					<label for="textinput-3">Test your voice: </label>
+						<input type="button" data-inline="true" value="Play" id="voicePlayed">
+						<input type="text" name="textinput-3" id="voicePlayStatus" placeholder="" value="">
+				</div>	
+				<div class="ui-field-contain">
+					<label for="textinput-4">Save your voice: </label>
+						<input type="button" data-inline="true" value="Save" id="voiceSaved">
+				</div>		            	
+				</fieldset>
+			</form>
+  		</div>
+	</div>
+	<!-- End of modal -->
 	</div>
 	
 	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
