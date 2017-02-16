@@ -79,9 +79,6 @@ function getRouteOnMap() {
 }
 
 $(document).on("pageinit", "#googlemapPlot", function(event){
-    console.log("audioHistory" + audioHistory);
-    console.log("csrftoken");
-    console.log(csrfFromServer);
     route_extraction();
 });
     
@@ -113,7 +110,7 @@ function route_extraction(){
             [svg, Data, margin, height, width, x, y] = svgPlot();
             getPreviousDistanceMarked(svg, height, Data, x, y);
             mouseHovering(svg);
-            drawDrivenRoad();
+            // drawDrivenRoad(); // There is an issue here. To be sorted out later
         }
     });
 }
@@ -333,9 +330,9 @@ function mouseHovering(svg){
         var i = bisectDistance(Data, x0, 1);
         var y0 = Data[i].y;
         var mouseY = y(y0);
-        // Identify latitude, lingitude corresponding to x0
-        saveAudio(x0);
-        addSoundIcon(x0);        
+        // // Identify latitude, lingitude corresponding to x0
+        // saveAudio(x0);
+        // addSoundIcon(x0);        
         var verticalLine = svg.append("line")
                                 .attr("x1", mouseX)  //<<== change your code here
                                 .attr("y1", height)
@@ -443,7 +440,6 @@ Object.size = function(obj) {
 // Get the driven path on the map
 function drawDrivenRoad(){
     console.log("I am in drawDrivenRoad function");
-    console.log(retrieveDrivenGeo);
     var drivenLatitude = null;
     var drivenLongitude = null;
     $.ajax({
@@ -514,10 +510,10 @@ window.onclick = function(event) {
     }
 }
 
-function modal_function(svg, distance_mark, mouseX, mouseY, imageOffsetX, imageOffsetY){
+function modal_function(svg, x0, mouseX, mouseY, imageOffsetX, imageOffsetY){
     
     // Showing the marked distance to the user
-    document.getElementById('textinput-1').value = String(distance_mark) + ' km';
+    document.getElementById('textinput-1').value = String(x0) + ' km';
 
     // Corresponding latitude and longitude of the marked distance
 
@@ -549,18 +545,18 @@ function modal_function(svg, distance_mark, mouseX, mouseY, imageOffsetX, imageO
     // Voice saving feature
     $( "#voiceSaved" ).one ("click", function() {
         for (var i=0; i<gpx_distance.length; i++){
-            if (distance_mark <= gpx_distance[i]){
+            if (x0 <= gpx_distance[i]){
                 var dis_Mark_Pos = i;
                 break;
             }
         }
-        var dis_Mark = distance_mark;
+        var dis_Mark = x0;
         var dis_lat = gpx_latitude[dis_Mark_Pos];
         var dis_lon = gpx_longitude[dis_Mark_Pos];
         alert("Voice saved");
-        // data = {dis_Mark: dis_Mark, dis_Mark_Pos: dis_Mark_Pos, dis_lat: dis_lat, dis_lon: dis_lon, csrfmiddlewaretoken : getCookie('csrftoken')};
-        // $.post(voice_saving, data, function(response){
-        // });
+        data = {dis_Mark: dis_Mark, dis_Mark_Pos: dis_Mark_Pos, dis_lat: dis_lat, dis_lon: dis_lon, csrfmiddlewaretoken : getCookie('csrftoken')};
+        $.post(voiceSaving, data, function(response){
+        });
 
         // NOTE: http://stackoverflow.com/questions/18416749/adding-fontawesome-icons-to-a-d3-graph/19385042#19385042
         // The audio icon image appears now because if the code is written on svg.onclick, then
@@ -576,5 +572,8 @@ function modal_function(svg, distance_mark, mouseX, mouseY, imageOffsetX, imageO
 
         document.getElementById('voiceRecordStatus').value = "";
         modal.style.display = "none";
+        // Identify latitude, lingitude corresponding to x0
+        saveAudio(x0);
+        addSoundIcon(x0); 
     });
 }
