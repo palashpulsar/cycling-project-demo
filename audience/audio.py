@@ -53,7 +53,9 @@ def test_record(request):
 	# start Recording
 	stream = audio.open(format=FORMAT, channels=CHANNELS,
 						rate=RATE, input=True,
-						frames_per_buffer=CHUNK)
+						frames_per_buffer=CHUNK,
+						output=True,
+						output_device_index=0)
 	print "recording..."
 	frames = []
  
@@ -73,6 +75,9 @@ def test_record(request):
 	waveFile.setframerate(RATE)
 	waveFile.writeframes(b''.join(frames))
 	waveFile.close()
+	print "get_default_output_device_info(): ", audio.get_default_output_device_info()
+	# device_count = audio.get_device_count()
+	# print "device_count: ", device_count
 	print "File is saved somewhere."
 	return HttpResponse("Voice to be played")
 
