@@ -12,7 +12,6 @@ gunicorn==19.6.0
 jmespath==0.9.1
 psycopg2==2.6.2
 pyasn1==0.1.9
-PyAudio==0.2.10
 python-dateutil==2.6.0
 PyYAML==3.12
 rsa==3.4.2
