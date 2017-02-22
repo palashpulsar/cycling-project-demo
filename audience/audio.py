@@ -40,6 +40,13 @@ def modify_filename(filename, mark):
 	filename.name = file_rename
 	return filename
 
+def pyaudioTest(request):
+	audio = pyaudio.PyAudio()
+	print "get_default_host_api_info(): ", audio.get_default_host_api_info()
+	print "get_default_input_device_info(): ", audio.get_default_input_device_info()
+	print "get_default_output_device_info(): ", audio.get_default_output_device_info()
+	return HttpResponse("Testing o pyaudio")
+
 def test_record(request):
 
 	FORMAT = pyaudio.paInt16
@@ -53,9 +60,7 @@ def test_record(request):
 	# start Recording
 	stream = audio.open(format=FORMAT, channels=CHANNELS,
 						rate=RATE, input=True,
-						frames_per_buffer=CHUNK,
-						output=True,
-						output_device_index=0)
+						frames_per_buffer=CHUNK)
 	print "recording..."
 	frames = []
  
@@ -75,7 +80,7 @@ def test_record(request):
 	waveFile.setframerate(RATE)
 	waveFile.writeframes(b''.join(frames))
 	waveFile.close()
-	print "get_default_output_device_info(): ", audio.get_default_output_device_info()
+	# print "get_default_output_device_info(): ", audio.get_default_output_device_info()
 	# device_count = audio.get_device_count()
 	# print "device_count: ", device_count
 	print "File is saved somewhere."

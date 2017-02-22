@@ -16,4 +16,7 @@ urlpatterns = [
 	url(r'^modal/play/$', audio.test_play, name='play'),
 	# saving the recorded sound
 	url(r'^modal/save/$', audio.test_save, name='save'),
+
+	# Testing of pyaudio
+	url(r'^test/$', audio.pyaudioTest, name='test'),
 ]
