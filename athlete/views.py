@@ -3,11 +3,25 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import gpx_file_form
 from .models import gpx_file, gpx_dataObj, geoLocation
 from audience.models import VoiceInstruction
-from .s3_management_function import gpx_delete, csv_extraction
+from .amazonS3 import gpx_delete, csv_extraction
 from django.middleware.csrf import get_token
 import json
 
 # Create your views here.
+
+def uploadCSV(request):
+	form = gpx_file_form()
+	# There will be one CSV (GPX later) file at a time
+	gpx_dataObj.objects.all().delete()
+	VoiceInstruction.objects.all().delete()
+	geoLocation.objects.all().delete()
+	if request.method == 'POST':
+		form = gpx_file_form(request.POST, request.FILES)
+		if form.is_valid:
+			if len(request.FILES) != 0: # User has entered the file
+				file = gpx_file(docfile=request.FILES['docfile'])
+				file.save()
+	return render(request, 'athlete/gpx.html', {'form': form})
 
 def test(request):
 	gpx_json = gpx_dataObj.objects.all()[0]
@@ -28,26 +42,6 @@ def default_local(request):
 				file = gpx_file(docfile=request.FILES['docfile'])
 				file.save()
 				dataset = csv_extraction('local', str(file.docfile))
-				entering_gpx_dataObj(dataset, str(file.docfile))
-				return HttpResponseRedirect("../mapviz")
-				# return HttpResponse("Thanks for uploading file.")
-		else:
-			form = gpx_file_form()
-	return render(request, 'athlete/gpx.html', {'form': form})
-
-def default_stage(request):
-	form = gpx_file_form()
-	gpx_delete() # There will be only one GPX file, and nothing else
-	gpx_dataObj.objects.all().delete()
-	VoiceInstruction.objects.all().delete()
-	geoLocation.objects.all().delete()
-	if request.method == 'POST':
-		form = gpx_file_form(request.POST, request.FILES)
-		if form.is_valid:
-			if len(request.FILES) != 0: # User has entered the file
-				file = gpx_file(docfile=request.FILES['docfile'])
-				file.save()
-				dataset = csv_extraction('stage', str(file.docfile))
 				entering_gpx_dataObj(dataset, str(file.docfile))
 				return HttpResponseRedirect("../mapviz")
 				# return HttpResponse("Thanks for uploading file.")
