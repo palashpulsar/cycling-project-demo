@@ -544,6 +544,10 @@ function modal_function(svg, x0, mouseX, mouseY, imageOffsetX, imageOffsetY){
 
     // Voice saving feature
     $( "#voiceSaved" ).one ("click", function() {
+        console.log("Trying to disable the button");
+        console.log($(this).prop('disabled'));
+        $(this).prop('disabled', true); // NOTE: http://stackoverflow.com/questions/11705337/javascript-jquery-disable-submit-button-on-click-prevent-double-submitting
+        console.log($(this).prop('disabled'));
         for (var i=0; i<gpx_distance.length; i++){
             if (x0 <= gpx_distance[i]){
                 var dis_Mark_Pos = i;

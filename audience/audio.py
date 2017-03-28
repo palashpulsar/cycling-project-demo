@@ -21,7 +21,7 @@ def record(request):
 	CHANNELS = 2
 	RATE = 44100
 	CHUNK = 1024	
-	RECORD_SECONDS = 5
+	RECORD_SECONDS = 3
 
 	audio = pyaudio.PyAudio()
  
@@ -72,6 +72,7 @@ def save(request):
 			previous_distances = previousVoiceLocations()
 			# HOW TO AVOID DUPLICATE SAVINGS OF AUDIO??
 			# print type(dis_Mark)
+			# print previous_distances
 			# if float(dis_Mark) not in previous_distances:
 			# 	print "This is a new entry"
 			# else:

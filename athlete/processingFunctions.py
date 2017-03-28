@@ -43,6 +43,7 @@ def deletePreviousFiles():
 	VoiceInstruction.objects.all().delete()
 	geoLocation.objects.all().delete()
 	path_gpx = os.path.join(settings.MEDIA_ROOT, 'gpx')
+	path_voice = os.path.join(settings.MEDIA_ROOT, 'sound')
 	for the_file in os.listdir(path_gpx):
 		file_path = os.path.join(path_gpx, the_file)
 		try:
@@ -51,6 +52,13 @@ def deletePreviousFiles():
 					os.unlink(file_path)
 		except Exception as e:
 			print(e)
+	for voice_file in os.listdir(path_voice):
+		file_path = os.path.join(path_voice, voice_file)
+		try:
+			if os.path.isfile(file_path):
+				os.unlink(file_path)
+		except Exception as e:
+			print e
 	return
 
 def entering_gpx_dataObj(dataset, filename = "No name"):
