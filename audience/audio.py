@@ -90,9 +90,11 @@ def save(request):
 											voice_status=0, 
 											latitude=dis_lat, 
 											longitude=dis_lon)
-			new_voice.save()
 			print "voice file path is %r" % new_voice.voice.path
-			os.remove(path_to_temporary_audio)
+			if os.path.isfile(path_to_temporary_audio):
+				print "Removing the temporary file named: ", path_to_temporary_audio
+				os.remove(path_to_temporary_audio)
+				new_voice.save()
 	return HttpResponse("Voice to be saved")
 
 def previousVoiceLocations():
