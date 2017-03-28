@@ -122,6 +122,46 @@ def csv_extraction(development, filename):
 		dataset.append(data)
 	return dataset
 
+def test(request):
+	gpx_json = gpx_dataObj.objects.all()[0]
+	gpx_data = json.loads(gpx_json.data_json)
+	# return HttpResponse("Test occurring")
+	return JsonResponse(gpx_data, safe=False)
+
+def default_local(request):
+	form = gpx_file_form()
+	# gpx_delete() # There will be only one GPX file, and nothing else
+	gpx_dataObj.objects.all().delete()
+	VoiceInstruction.objects.all().delete()
+	geoLocation.objects.all().delete()
+	if request.method == 'POST':
+		form = gpx_file_form(request.POST, request.FILES)
+		if form.is_valid:
+			if len(request.FILES) != 0: # User has entered the file
+				file = gpx_file(docfile=request.FILES['docfile'])
+				file.save()
+				dataset = csv_extraction('local', str(file.docfile))
+				entering_gpx_dataObj(dataset, str(file.docfile))
+				return HttpResponseRedirect("../mapviz")
+				# return HttpResponse("Thanks for uploading file.")
+		else:
+			form = gpx_file_form()
+	return render(request, 'athlete/gpx.html', {'form': form})
+
+def voice_save_del(request):
+	print "We are in voice_save_del() function"
+	if request.method == 'POST':
+		if request.is_ajax():
+			print "A POST ajax request is made."
+			new_voice = VoiceInstruction(distance=request.POST.get('dis_Mark'), 
+											position_of_distance=request.POST.get('dis_Mark_Pos'),  
+											latitude=request.POST.get('dis_lat'), 
+											longitude=request.POST.get('dis_lon'),
+											voice_status=0,)
+			new_voice.save()
+			return HttpResponse('Successful Update of voice instruction')
+	return HttpResponse("Voice should be saved")
+
 # LINK: http://stackoverflow.com/questions/14091387/creating-a-dictionary-from-a-csv-file
 	# LINK: http://stackoverflow.com/questions/17262256/how-to-read-one-single-line-of-csv-data-in-python
 	# LINK: http://stackoverflow.com/questions/2241891/how-to-initialize-a-dict-with-keys-from-a-list-and-empty-value-in-python

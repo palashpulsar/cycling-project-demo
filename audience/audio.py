@@ -5,49 +5,17 @@ import pyaudio
 # NOTE: http://stackoverflow.com/questions/33513522/when-installing-pyaudio-pip-cannot-find-portaudio-h-in-usr-local-include
 import wave
 import tempfile
-import settings.local, settings.base
+from django.conf import settings
 from django.core.files import File
 import os
-# Global variables
-tf = tempfile.NamedTemporaryFile(dir = settings.local.MEDIA_ROOT, prefix="temporary_", suffix = ".wav", delete = False)
-path_to_temporary_audio = tf.name
-
 
 # Create your views here.
 
-def test_save(request):
-	if request.method == 'POST':
-		if request.is_ajax():
-			dis_Mark = request.POST.get('dis_Mark')
-			dis_Mark_Pos = request.POST.get('dis_Mark_Pos')
-			dis_lat = request.POST.get('dis_lat')
-			dis_lon = request.POST.get('dis_lon')
-			voice = python_to_django_file_conversion(path_to_temporary_audio)
-			voice_rename = modify_filename(voice, dis_Mark_Pos)
-			new_voice = VoiceInstruction(voice=voice_rename, distance=dis_Mark, position_of_distance=dis_Mark_Pos, voice_status=0, latitude=dis_lat, longitude=dis_lon)
-			new_voice.save()
-	return HttpResponse("Voice to be saved")
+def record(request):
 
-def python_to_django_file_conversion(python_file):
-	f = open(python_file)
-	django_file = File(f)
-	return django_file
-
-def modify_filename(filename, mark):
-	# NOTE: http://stackoverflow.com/questions/25652809/django-file-upload-and-rename
-	ext = filename.name.split('.')[-1]
-	file_rename = "%s_%s.%s" % ("voice", str(mark), ext)
-	filename.name = file_rename
-	return filename
-
-def pyaudioTest(request):
-	audio = pyaudio.PyAudio()
-	print "get_default_host_api_info(): ", audio.get_default_host_api_info()
-	print "get_default_input_device_info(): ", audio.get_default_input_device_info()
-	print "get_default_output_device_info(): ", audio.get_default_output_device_info()
-	return HttpResponse("Testing o pyaudio")
-
-def test_record(request):
+	tf = tempfile.NamedTemporaryFile(dir = os.path.join(settings.MEDIA_ROOT, 'recordedVoice'), prefix="temporary_", suffix = ".wav", delete = False)
+	path_to_temporary_audio = tf.name
+	print "path_to_temporary_audio: ", path_to_temporary_audio
 
 	FORMAT = pyaudio.paInt16
 	CHANNELS = 2
@@ -83,29 +51,48 @@ def test_record(request):
 	# print "get_default_output_device_info(): ", audio.get_default_output_device_info()
 	# device_count = audio.get_device_count()
 	# print "device_count: ", device_count
+	request.session['temporary_audio_file'] = path_to_temporary_audio
 	print "File is saved somewhere."
-	return HttpResponse("Voice to be played")
-
-def test_play(request):
-	filename_url = {}
-	filename_url['url'] = path_to_temporary_audio[len(settings.base.BASE_DIR):]
-	if request.is_ajax():
-		return JsonResponse(filename_url)	
 	return HttpResponse("Voice to be recorded")
 
-def voice_save_del(request):
-	print "We are in voice_save_del() function"
+def play(request):
+	# Works only with google chrome.
+	path_to_temporary_audio = request.session.get('temporary_audio_file')
+	filename_url = {}
+	filename_url['url'] = path_to_temporary_audio[len(settings.BASE_DIR):]
+	if request.is_ajax():
+		return JsonResponse(filename_url)	
+	return HttpResponse("Voice to be played")
+
+def save(request):
+	path_to_temporary_audio = request.session.get('temporary_audio_file')
 	if request.method == 'POST':
 		if request.is_ajax():
-			print "A POST ajax request is made."
-			new_voice = VoiceInstruction(distance=request.POST.get('dis_Mark'), 
-											position_of_distance=request.POST.get('dis_Mark_Pos'),  
-											latitude=request.POST.get('dis_lat'), 
-											longitude=request.POST.get('dis_lon'),
-											voice_status=0,)
+			dis_Mark = request.POST.get('dis_Mark')
+			previous_distances = previousVoiceLocations()
+			# HOW TO AVOID DUPLICATE SAVINGS OF AUDIO??
+			# print type(dis_Mark)
+			# if float(dis_Mark) not in previous_distances:
+			# 	print "This is a new entry"
+			# else:
+			# 	print "AN already entry exst. Cannot override."
+			# for entry in previous_distances:
+			# 	print type(entry)
+			dis_Mark_Pos = request.POST.get('dis_Mark_Pos')
+			dis_lat = request.POST.get('dis_lat')
+			dis_lon = request.POST.get('dis_lon')
+			voice = python_to_django_file_conversion(path_to_temporary_audio)
+			voice_rename = modify_filename(voice, dis_Mark_Pos)
+			new_voice = VoiceInstruction(voice=voice_rename, 
+											distance=dis_Mark, 
+											position_of_distance=dis_Mark_Pos, 
+											voice_status=0, 
+											latitude=dis_lat, 
+											longitude=dis_lon)
 			new_voice.save()
-			return HttpResponse('Successful Update of voice instruction')
-	return HttpResponse("Voice should be saved")
+			print "voice file path is %r" % new_voice.voice.path
+			os.remove(path_to_temporary_audio)
+	return HttpResponse("Voice to be saved")
 
 def previousVoiceLocations():
 	distance = []
@@ -113,6 +100,25 @@ def previousVoiceLocations():
 	for obj in voice_obj:
 		distance.append(obj.distance)
 	return distance
+
+def python_to_django_file_conversion(python_file):
+	f = open(python_file)
+	django_file = File(f)
+	return django_file
+
+def modify_filename(filename, mark):
+	# NOTE: http://stackoverflow.com/questions/25652809/django-file-upload-and-rename
+	ext = filename.name.split('.')[-1]
+	file_rename = "%s_%s.%s" % ("voice", str(mark), ext)
+	filename.name = file_rename
+	return filename
+
+def pyaudioTest(request):
+	audio = pyaudio.PyAudio()
+	print "get_default_host_api_info(): ", audio.get_default_host_api_info()
+	print "get_default_input_device_info(): ", audio.get_default_input_device_info()
+	print "get_default_output_device_info(): ", audio.get_default_output_device_info()
+	return HttpResponse("Testing o pyaudio")
 
 def modal_close(request):
 	# If temporary file exists, then delete it.
