@@ -1,6 +1,7 @@
 import boto3
 import csv
 from .models import gpx_file, gpx_dataObj
+import os
 
 def gpx_delete():
 	gpx_file.objects.all().delete()
@@ -14,30 +15,17 @@ def gpx_delete():
 			obj.delete()
 	return None
 
-def csv_extraction(development, filename):
-	print "I am inside csv_extraction function."
-	print "filename: ", filename
-	file = None
+def csv_file_extraction(file):
+	print "I am inside csv_file_extraction function"
+	print "CSV file: ", file
 	data = {}
 	dataset = []
-	s3 = boto3.resource('s3')
-	bucket = s3.Bucket('pace-ire')
-	folder = 'gpx/'
-	for obj in bucket.objects.filter(Prefix = folder):
-		if development == 'local':
-			if obj.key != folder:
-				file = obj
-				print "obj.key: ", obj.key
-		elif development == 'stage':
-			if obj.key == filename:
-				file = obj
-	csv_file = file.get()['Body'].read()
-	string_csvData = csv.reader(csv_file.split())
-	dataList_string = list(string_csvData)
-	keys = dataList_string[0]
-	del dataList_string[0]
-	print "keys: ", keys
-	for rows in dataList_string:
-		data = dict(zip(keys, [float(i) for i in rows]))
-		dataset.append(data)
+	with open(file, 'rb') as f:
+		data_test = csv.reader(f)
+		keys = next(data_test)
+		print "keys: ", keys
+		print "data: "
+		for rows in data_test:
+			data = dict(zip(keys, [float(i) for i in rows]))
+			dataset.append(data)
 	return dataset

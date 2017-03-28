@@ -74,27 +74,6 @@ def gpx_ext_info(gpx_file):
 	gpx_data.save()
 	return None
 
-def csv_file_extraction(file):
-	# LINK: http://stackoverflow.com/questions/14091387/creating-a-dictionary-from-a-csv-file
-	# LINK: http://stackoverflow.com/questions/17262256/how-to-read-one-single-line-of-csv-data-in-python
-	# LINK: http://stackoverflow.com/questions/2241891/how-to-initialize-a-dict-with-keys-from-a-list-and-empty-value-in-python
-	# LINK: http://stackoverflow.com/questions/209840/map-two-lists-into-a-dictionary-in-python
-	# LINK: http://stackoverflow.com/questions/1614236/in-python-how-do-i-convert-all-of-the-items-in-a-list-to-floats
-	print "I am inside csv_file_extraction function"
-	print "CSV file: ", file
-	data = {}
-	dataset = []
-	with open(file, 'rb') as f:
-		data_test = csv.reader(f)
-		keys = next(data_test)
-		print "keys: ", keys
-		print "data: "
-		for rows in data_test:
-			data = dict(zip(keys, [float(i) for i in rows]))
-			print data
-			dataset.append(data)
-	return None
-
 def default_stage(request):
 	form = gpx_file_form()
 	gpx_delete() # There will be only one GPX file, and nothing else
@@ -114,3 +93,37 @@ def default_stage(request):
 		else:
 			form = gpx_file_form()
 	return render(request, 'athlete/gpx.html', {'form': form})
+
+def csv_extraction(development, filename):
+	print "I am inside csv_extraction function."
+	print "filename: ", filename
+	file = None
+	data = {}
+	dataset = []
+	s3 = boto3.resource('s3')
+	bucket = s3.Bucket('pace-ire')
+	folder = 'gpx/'
+	for obj in bucket.objects.filter(Prefix = folder):
+		if development == 'local':
+			if obj.key != folder:
+				file = obj
+				print "obj.key: ", obj.key
+		elif development == 'stage':
+			if obj.key == filename:
+				file = obj
+	csv_file = file.get()['Body'].read()
+	string_csvData = csv.reader(csv_file.split())
+	dataList_string = list(string_csvData)
+	keys = dataList_string[0]
+	del dataList_string[0]
+	print "keys: ", keys
+	for rows in dataList_string:
+		data = dict(zip(keys, [float(i) for i in rows]))
+		dataset.append(data)
+	return dataset
+
+# LINK: http://stackoverflow.com/questions/14091387/creating-a-dictionary-from-a-csv-file
+	# LINK: http://stackoverflow.com/questions/17262256/how-to-read-one-single-line-of-csv-data-in-python
+	# LINK: http://stackoverflow.com/questions/2241891/how-to-initialize-a-dict-with-keys-from-a-list-and-empty-value-in-python
+	# LINK: http://stackoverflow.com/questions/209840/map-two-lists-into-a-dictionary-in-python
+	# LINK: http://stackoverflow.com/questions/1614236/in-python-how-do-i-convert-all-of-the-items-in-a-list-to-floats
