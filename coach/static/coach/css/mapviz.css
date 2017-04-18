@@ -1,0 +1,20 @@
+/*stylesheet*/
+
+html, body{
+	height: 100%;
+	width: 100%;
+	}
+
+#gpxPlot{
+	height: 50%;
+	width: 93%;
+}
+
+.ui-content{
+	height: inherit;
+}
+
+#googlemapPlot{
+	height: inherit;
+}
+

@@ -1,0 +1,22 @@
+/*stylesheet*/
+
+html, body{
+	height: 100%;
+	width: 100%;
+	}
+
+body{
+	background: white;
+	}
+
+#logo{
+	position: relative;
+}
+
+#logo img{
+	position: absolute;
+	top: 0px;
+	right: 50px;
+	width: 100px;
+	height: 100px;
+}

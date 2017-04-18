@@ -1,0 +1,30 @@
+{% load staticfiles%}
+
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>Strategy</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<link rel="stylesheet" href="{% static 'coach/css/mapviz.css' %}" />
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCy3wZuNJjVKToCgd1LRGOOMAr8Na1vKg"
+    async defer></script>
+	<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<script>
+	var gpxPlotGraph = "{% url 'mapviz'%}";
+	var csrfFromServer = "{% csrf_token %}";
+</script>
+
+<body>
+	<div data-role="page" id="googlemapPlot">
+	<div role="main" class="ui-content">
+		<div id="gpxPlot">map appears here</div>
+	</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+	<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script src="{% static 'coach/js/mapviz.js' %}"></script>
+</body>
+</html>
