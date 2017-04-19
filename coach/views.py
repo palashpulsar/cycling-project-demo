@@ -1,11 +1,9 @@
 from django.shortcuts import render
+from gpx_file_processing import gpx_extract_info, delete_previous_gpx_files
 from stravalib import Client
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from .fileProcessor import deletePreviousFiles
 from .forms import gpx_file_form
 from .models import VoiceInstruction, gpxFile
-import gpxpy
-from vincenty import vincenty
 
 # Create your views here.
 
@@ -46,7 +44,7 @@ def uploadGPX(request):
 		form = gpx_file_form(request.POST, request.FILES)
 		if form.is_valid:
 			if len(request.FILES) != 0: # User has entered the file
-				deletePreviousFiles()
+				delete_previous_gpx_files()
 				file = gpxFile(file=request.FILES['docfile'])
 				file.save()
 				request.session['gpx_data']=gpx_extract_info(file)
@@ -61,29 +59,3 @@ def map_viz(request):
 	if request.is_ajax():
 		return JsonResponse(gpx_data, safe=False)
 	return render(request, 'coach/mapviz.html')
-
-def gpx_extract_info(gpx_file):
-	# Identifying the location of the gpx file
-	gpx = gpxpy.parse(gpx_file.file)
-	t = 0
-	gpx_data = {}
-	gpx_data['latitude'] = []
-	gpx_data['longitude'] = []	
-	gpx_data['elevation'] = []
-	gpx_data['distance'] = [] 
-	for track in gpx.tracks:
-		for segment in track.segments:
-			for point in segment.points:
-				gpx_data['latitude'].append(point.latitude)
-				gpx_data['longitude'].append(point.longitude)
-				gpx_data['elevation'].append(point.elevation)
-				t = t+1
-	# Calculating the distance
-	for i in range(len(gpx_data['latitude'])):
-		if(i==0):
-			gpx_data['distance'].append(0)
-		else:
-			boston = (gpx_data['latitude'][i-1], gpx_data['longitude'][i-1])
-			newyork = (gpx_data['latitude'][i], gpx_data['longitude'][i])
-			gpx_data['distance'].append(gpx_data['distance'][i-1] + vincenty(boston, newyork))	
-	return gpx_data

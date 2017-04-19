@@ -5,4 +5,7 @@ db.sqlite3
 *.csv
 *.wav
 settings/
+Extras/
+audience/
+
 
