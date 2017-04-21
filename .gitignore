@@ -1,11 +1,9 @@
 venv
+venv2
 *.pyc
 db.sqlite3
-*.gpx
-*.csv
 *.wav
 settings/
 Extras/
 audience/
-
-
+athlete/
