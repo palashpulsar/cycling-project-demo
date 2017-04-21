@@ -79,3 +79,21 @@ function modal_function(svg, x0, mouseX, mouseY, imageOffsetX, imageOffsetY){
         addSoundIcon(x0); 
     });
 }
+
+function saveAudio(x0){
+    console.log("saveAudio function activated. URL called: " + audioSave);
+    for (var i=0; i<gpx_distance.length; i++){
+        if (x0 <= gpx_distance[i]){
+            var dis_Mark_Pos = i;
+            break;
+        }
+    }
+    var dis_Mark = x0;
+    var dis_lat = gpx_latitude[dis_Mark_Pos];
+    var dis_lon = gpx_longitude[dis_Mark_Pos];
+    console.log(dis_lat);
+    var data = {dis_Mark: dis_Mark, dis_Mark_Pos: dis_Mark_Pos, dis_lat: dis_lat, 
+        dis_lon: dis_lon, csrfmiddlewaretoken : getCookie('csrftoken')};
+    $.post(audioSave, data, function(response){
+    });
+}

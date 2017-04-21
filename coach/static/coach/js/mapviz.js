@@ -5,10 +5,6 @@ var gpx_longitude = [];
 var gpx_elevation = [];
 var gpx_distance = [];
 
-var next_button_value = -1;
-var distanceSegment = 20; // TAken from Python. Needs modification to autogenerate this value from python
-var markers = [];
-
 $(document).on("pageinit", "#googlemapPlot", function(event){
     route_extraction();
 });
@@ -21,7 +17,7 @@ function route_extraction(){
         type: "GET",
         url: gpxPlotGraph,
         success: function(data){
-            console.log(data['latitude']);
+            console.log(data);
             gpx_latitude = data['latitude'];
             gpx_longitude = data['longitude'];
             gpx_elevation = data['elevation']; 

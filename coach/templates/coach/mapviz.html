@@ -15,7 +15,13 @@
 <script>
 	var gpxPlotGraph = "{% url 'mapviz'%}";
 	var csrfFromServer = "{% csrf_token %}";
-	var audioImagePath = "{% static 'audience/image/audio.svg' %}";
+
+	// Audio related
+	var audioImagePath = "{% static 'coach/image/audio.svg' %}";
+	var voiceRecording = "{% url 'record'%}";
+	var voicePlaying = "{% url 'play'%}";
+	var voiceSaving = "{% url 'save'%}";
+	var audioHistory = "{% url 'history'%}";
 </script>
 
 <body>

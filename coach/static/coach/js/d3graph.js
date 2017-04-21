@@ -1,3 +1,5 @@
+var markers = [];
+
 function svgPlot(){
 
     //PART 1
@@ -282,4 +284,27 @@ function setAllMarker(map) {
 function deleteMarkers() {
   setAllMarker(null);
   markers = [];
+}
+
+function addSoundIcon(x0){
+    console.log("   a. addSoundIcon function activated");
+    for (var i=0; i<gpx_distance.length; i++){
+        if(x0 <= gpx_distance[i]){
+            var lat_clicked = gpx_latitude[i];
+            var lon_clicked = gpx_longitude[i];
+            break;
+        }
+    }
+    var icon = {
+        path: 'M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z',
+        fillColor: roadColor,
+        fillOpacity: 0.8,
+        scale: 0.8,
+    };
+    var icon_marker = new google.maps.Marker({
+        position: {lat: lat_clicked, lng: lon_clicked},
+        icon: icon,
+        map: map
+    });
+    icon_markers.push(icon_marker);
 }

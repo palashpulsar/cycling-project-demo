@@ -151,3 +151,10 @@ def saved_voice_positions(segment_start_pos, segment_end_pos):
 			voice_pos.append(i.position_of_distance)
 			# voice_pos.append(i.position_of_distance - segment_start_pos) # Position of voice with respect to the current segmented distance
 	return voice_pos
+
+def voiceHistory(request):
+	# This function determines the 'distances' of previously saved voices
+	# Collect the location of all previously saved
+	distance = previousVoiceLocations()
+	print distance
+	return JsonResponse(distance, safe=False)
