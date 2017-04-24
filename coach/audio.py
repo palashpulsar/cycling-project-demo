@@ -48,9 +48,6 @@ def record(request):
 	waveFile.setframerate(RATE)
 	waveFile.writeframes(b''.join(frames))
 	waveFile.close()
-	# print "get_default_output_device_info(): ", audio.get_default_output_device_info()
-	# device_count = audio.get_device_count()
-	# print "device_count: ", device_count
 	request.session['temporary_audio_file'] = path_to_temporary_audio
 	print "File is saved somewhere."
 	return HttpResponse("Voice to be recorded")
